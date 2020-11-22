@@ -11,7 +11,6 @@ class Rats(dj.Manual):
     -> lab.Contacts
     rats_old_id                 : int(10)         # was a unique number assigned to each rat
     free=0                      : tinyint(1)      # whether or not the rat is available for use by any other experimenter
-    contact=null                : varchar(40)     # the PUIDs of the lab member(s) responsible for the rat
     comments=null               : varchar(500)    # any notes about the animal, surgery info, transgenic strain...
     vendor='Taconic'            : varchar(40)     # e.g. Taconic, Charles River, etc.
     waterperday=30              : decimal(3,1)    # WHERE IT IS THE PERCENT BODY MASS THE RAT WILL BE OFFERED IN THE PUB, VALUES < 3.0 ARE NOT ALLOWED BY PROTOCOL, 100 INTERPRETED AS TO BE EXCLUDED FROM THE PUB AND RECEIVE WATER IN HOME CAGE
@@ -26,6 +25,12 @@ class Rats(dj.Manual):
     israt=1                     : tinyint(1)      # 1 if rat, 0 if mouse
     """
 
+    class Contact(dj.Part):
+        definition = """
+        -> master
+        contact                : varchar(40)     # PUIDs of the lab member(s) responsible for the rat
+        """
+
 @subject
 class RatHistory(dj.Manual):
     definition = """
@@ -36,7 +41,6 @@ class RatHistory(dj.Manual):
     rathistory_old_id           : int(10)
     free=0                      : tinyint(1)      # 'whether or not the rat is available for use by any other experimenter',
     alert=0                     : tinyint(1)      # 'whether or not there is an alert for special attention for the rat (e.g. sick, recent surgery, etc.)',
-    contact=null                : varchar(40)   
     training=0                  : tinyint(1)   
     comments=null               : varchar(500)   
     waterperday=30              : int(11)         # '0 for free water, otherwise the number of minutes the rat has access to water each day (may vary over time)',
@@ -50,3 +54,9 @@ class RatHistory(dj.Manual):
     bringupday=null             : varchar(7)   
     ignored_by_watermeister=0   : tinyint(1)
     """
+
+    class Contact(dj.Part):
+        definition = """
+        -> master
+        contact                : varchar(40)     # PUIDs of the lab member(s) responsible for the rat
+        """

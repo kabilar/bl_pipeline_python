@@ -224,9 +224,9 @@ class Rats(dj.Computed):
      class Contact(dj.Part):
           definition = """
           -> master
+          contact                : varchar(40)     # PUIDs of the lab member(s) responsible for the rat
           ----
           ratname                : varchar(8)      # Unique rat name, 1 letter 3 numbers
-          contact=null           : varchar(40)     # the PUIDs of the lab member(s) responsible for the rat
           """
 
      def make(self, key):
@@ -238,7 +238,6 @@ class Rats(dj.Computed):
                user_id             = data['experimenter'],#change to emailid
                rats_old_id         = data['internalID'],
                free                = data['free'],
-               # contact             = data['contact'],
                comments            = data['comments'],
                vendor              = data['vendor'],
                waterperday         = data['waterperday'],
@@ -256,8 +255,12 @@ class Rats(dj.Computed):
                entry.update(deliverydate=data['deliverydate'])
 
           self.insert1(entry)
-          # set for loop for multiple contacts per rat
-          Rats.Contact.insert(dict(key,ratname = data['ratname'],contact = data['contact']))
+
+          if data['contact'] is not None:
+               if (not data['contact'].isspace()) and (data['contact'] != ''):
+                    contacts = data['contact'].split(',')
+                    for contact in contacts:
+                         self.Contact.insert1(dict(key,ratname = data['ratname'],contact = contact.strip()))
 
 @subject_shadow
 class RatHistory(dj.Computed):
@@ -269,7 +272,6 @@ class RatHistory(dj.Computed):
      user_id                     : varchar(32)     # PNI netID or similar
      free=0                      : tinyint(1)      # 'whether or not the rat is available for use by any other experimenter',
      alert=0                     : tinyint(1)      # 'whether or not there is an alert for special attention for the rat (e.g. sick, recent surgery, etc.)',
-     contact=null                : varchar(40)   
      training=0                  : tinyint(1)   
      comments=null               : varchar(500)   
      waterperday=30              : int(11)         # '0 for free water, otherwise the number of minutes the rat has access to water each day (may vary over time)',
@@ -284,6 +286,14 @@ class RatHistory(dj.Computed):
      ignored_by_watermeister=0   : tinyint(1)
      """
 
+     class Contact(dj.Part):
+          definition = """
+          -> master
+          contact                : varchar(40)     # PUIDs of the lab member(s) responsible for the rat
+          ----
+          ratname                : varchar(8)      # Unique rat name, 1 letter 3 numbers
+          """
+
      def make(self, key):
           key_shadow = dict(internalID=key['rathistory_old_id'])
           data = (ratinfo.RatHistory & key_shadow).fetch1()
@@ -294,8 +304,7 @@ class RatHistory(dj.Computed):
                user_id                  = data['experimenter'],
                rathistory_old_id        = data['internalID'],
                free                     = data['free'],
-               alert                    = data['alert'],
-               contact                  = data['contact'], 
+               alert                    = data['alert'], 
                training                 = data['training'], 
                comments                 = data['comments'],
                waterperday              = data['waterperday'],
@@ -312,6 +321,12 @@ class RatHistory(dj.Computed):
                entry.update(date_sac=data['dateSac'])
 
           self.insert1(entry)
+
+          if data['contact'] is not None:
+               if (not data['contact'].isspace()) and (data['contact'] != ''):
+                    contacts = data['contact'].split(',')
+                    for contact in contacts:
+                         self.Contact.insert1(dict(key,ratname = data['ratname'],contact = contact.strip()))
 
 #%%
 # populate shadow tables
