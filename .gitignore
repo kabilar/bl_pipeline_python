@@ -3,3 +3,10 @@ venv/
 
 *.DS_Store
 *.idea
+
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+
+# datajoint
+dj_local_conf.json
