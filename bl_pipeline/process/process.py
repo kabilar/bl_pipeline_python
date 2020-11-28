@@ -38,17 +38,17 @@ MODULES = [
                 'Riginfo',
                 'Rigflush',
                 'Rigfood',
-                # 'RigMaintenance',
-                # 'TrainingRoom'
+                'RigMaintenance',
+                'TrainingRoom'
             ]
         ),
-    # dict(
-    #         module=(subject, subject_shadow),
-    #         tables=[
-    #             'Rats',
-    #             'RatHistory'
-    #         ]
-    #     ),
+    dict(
+            module=(subject, subject_shadow),
+            tables=[
+                'Rats',
+                'RatHistory'
+            ]
+        ),
 ]
 
 
