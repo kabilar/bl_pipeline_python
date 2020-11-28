@@ -1,9 +1,11 @@
 import datajoint as dj
-from new import lab
+from bl_pipeline import lab
 
-subject = dj.schema('bl_new_subject')
 
-@subject
+schema = dj.schema('bl_new_subject')
+
+
+@schema
 class Rats(dj.Manual):
     definition = """
     ratname                     : varchar(8)      # Unique rat name, 1 letter 3 numbers
@@ -31,7 +33,8 @@ class Rats(dj.Manual):
         contact                : varchar(40)     # PUIDs of the lab member(s) responsible for the rat
         """
 
-@subject
+
+@schema
 class RatHistory(dj.Manual):
     definition = """
     -> Rats
@@ -41,17 +44,17 @@ class RatHistory(dj.Manual):
     rathistory_old_id           : int(10)
     free=0                      : tinyint(1)      # 'whether or not the rat is available for use by any other experimenter',
     alert=0                     : tinyint(1)      # 'whether or not there is an alert for special attention for the rat (e.g. sick, recent surgery, etc.)',
-    training=0                  : tinyint(1)   
-    comments=null               : varchar(500)   
+    training=0                  : tinyint(1)
+    comments=null               : varchar(500)
     waterperday=30              : int(11)         # '0 for free water, otherwise the number of minutes the rat has access to water each day (may vary over time)',
     recovering=0                : tinyint(1)      # 'whether or not the rat is currently in recovery from surgery',
-    extant=0                    : tinyint(4)   
-    cagemate=null               : varchar(4)   
-    force_free_water=0          : tinyint(3) 
-    date_sac=null               : date   
-    force_dep_water=0           : tinyint(3) 
+    extant=0                    : tinyint(4)
+    cagemate=null               : varchar(4)
+    force_free_water=0          : tinyint(3)
+    date_sac=null               : date
+    force_dep_water=0           : tinyint(3)
     bring_up_at=0               : tinyint(1)      # 'set with which rat should be brought upstairs',
-    bringupday=null             : varchar(7)   
+    bringupday=null             : varchar(7)
     ignored_by_watermeister=0   : tinyint(1)
     """
 
