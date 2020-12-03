@@ -1,8 +1,10 @@
 import datajoint as dj
 
-lab = dj.schema('bl_new_lab')
 
-@lab
+schema = dj.schema('bl_new_lab')
+
+
+@schema
 class Contacts(dj.Manual):
     definition = """
     user_id                    : varchar(32)      # PNI netID or similar
@@ -26,12 +28,13 @@ class Contacts(dj.Manual):
     phone_carrier=null         : varchar(15)      # cell phone network provider, necessary to send text messages
     """
 
-@lab
+
+@schema
 class Riginfo(dj.Manual):
     definition = """
     rigid                      : int(3)           # Unique rig integer number
     -----
-    rigname                    : varchar(32)      # THIS CURRENTLY DOES NOT EXIST 
+    rigname                    : varchar(32)      # THIS CURRENTLY DOES NOT EXIST
     ip_addr=''                 : char(15)         # IP address of the rig
     mac_addr=''                : char(12)         # MAC address of the rig
     rtfsm_ip=null              : char(15)         # The Linux machine this rig connects to
@@ -39,7 +42,8 @@ class Riginfo(dj.Manual):
     comptype=''                : char(50)         # Processor and Operating System info
     """
 
-@lab
+
+@schema
 class Rigflush(dj.Manual):
     definition = """
     -> Riginfo
@@ -49,7 +53,8 @@ class Rigflush(dj.Manual):
     wasflushed                 : tinyint(3)
     """
 
-@lab
+
+@schema
 class Rigfood(dj.Manual):
     definition = """
     rigfood_id                 : int(10)
@@ -58,14 +63,15 @@ class Rigfood(dj.Manual):
     rigfood_datetime           : datetime
     """
 
-@lab
+
+@schema
 class RigMaintenance(dj.Manual):
     definition = """
     rig_maintenance_id         : int(10)
     -----
     -> Riginfo
     rig_fix_date               : datetime         # date and time the rig was fixed
-    rig_maintenance_note       : varchar(500)     # description of what is wrong with a rig 
+    rig_maintenance_note       : varchar(500)     # description of what is wrong with a rig
     isbroken                   : tinyint(3)       # 1 if the rig is still broken
     broke_person               : varchar(45)      # lab member that flagged the rig as broken
     fix_person                 : varchar(45)      # lab member that fixed the rig
@@ -73,7 +79,8 @@ class RigMaintenance(dj.Manual):
     rig_maintenance_fix_note   : varchar(500)     # description of what was done to fix the rig
     """
 
-@lab
+
+@schema
 class TrainingRoom(dj.Manual):
     definition = """
     tower                      : int(10)          # unique ID, the tower the rig belongs to
