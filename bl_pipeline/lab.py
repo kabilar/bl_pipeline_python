@@ -70,12 +70,12 @@ class RigMaintenance(dj.Manual):
     rig_maintenance_id         : int(10)
     -----
     -> Riginfo
-    rig_fix_date               : datetime         # date and time the rig was fixed
+    rig_fix_date=null          : datetime         # date and time the rig was fixed
     rig_maintenance_note       : varchar(500)     # description of what is wrong with a rig
     isbroken                   : tinyint(3)       # 1 if the rig is still broken
     broke_person               : varchar(45)      # lab member that flagged the rig as broken
     fix_person                 : varchar(45)      # lab member that fixed the rig
-    broke_date                 : datetime         # date and time when the rig was flagged as broken
+    broke_date=null            : datetime         # date and time when the rig was flagged as broken
     rig_maintenance_fix_note   : varchar(500)     # description of what was done to fix the rig
     """
 
