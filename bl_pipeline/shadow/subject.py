@@ -1,6 +1,7 @@
 import datajoint as dj
 from bl_pipeline.shadow import lab
 
+ratinfo = dj.create_virtual_module('ratinfo', 'bl_ratinfo')
 
 schema = dj.schema('bl_shadow_subject')
 
@@ -29,19 +30,17 @@ class Rats(dj.Computed):
 
     class Contact(dj.Part):
         definition = """
-        -> master
-        contact                : varchar(40)     # PUIDs of the lab member(s) responsible for the rat
-        ----
-        ratname                : varchar(8)      # Unique rat name, 1 letter 3 numbers
+        contact                 : varchar(40)     # PUIDs of the lab member(s) responsible for the rat
+        ratname                 : varchar(8)      # Unique rat name, 1 letter 3 numbers
         """
 
     def make(self, key):
         key_shadow = dict(internalID=key['rats_old_id'])
         data = (ratinfo.Rats & key_shadow).fetch1()
-
+        data_email = (ratinfo.Contacts & {'experimenter': data['experimenter']}).fetch1('email')
         entry = dict(
             ratname             = data['ratname'],
-            user_id             = data['experimenter'],#change to emailid
+            user_id             = data_email.split('@')[0],
             rats_old_id         = data['internalID'],
             free                = data['free'],
             comments            = data['comments'],
@@ -66,11 +65,10 @@ class Rats(dj.Computed):
             if (not data['contact'].isspace()) and (data['contact'] != ''):
                 contacts = data['contact'].split(',')
                 for contact in contacts:
-                    self.Contact.insert1(
-                        dict(key, ratname=data['ratname'],
-                             contact=contact.strip()))
+                    self.Contact.insert1(dict(ratname=data['ratname'],
+                                              contact=contact.strip()))
 
-
+    
 @schema
 class RatHistory(dj.Computed):
     definition = """
@@ -97,20 +95,19 @@ class RatHistory(dj.Computed):
 
     class Contact(dj.Part):
         definition = """
-        -> master
-        contact                : varchar(40)     # PUIDs of the lab member(s) responsible for the rat
-        ----
-        ratname                : varchar(8)      # Unique rat name, 1 letter 3 numbers
+        contact                 : varchar(40)     # PUIDs of the lab member(s) responsible for the rat
+        ratname                 : varchar(8)      # Unique rat name, 1 letter 3 numbers
         """
 
     def make(self, key):
         key_shadow = dict(internalID=key['rathistory_old_id'])
         data = (ratinfo.RatHistory & key_shadow).fetch1()
+        data_email = (ratinfo.Contacts & {'experimenter': data['experimenter']}).fetch1('email')
 
         entry = dict(
             ratname                  = data['ratname'],
             logtime                  = data['logtime'],
-            user_id                  = data['experimenter'],
+            user_id                  = data_email.split('@')[0],
             rathistory_old_id        = data['internalID'],
             free                     = data['free'],
             alert                    = data['alert'],
@@ -135,4 +132,5 @@ class RatHistory(dj.Computed):
             if (not data['contact'].isspace()) and (data['contact'] != ''):
                 contacts = data['contact'].split(',')
                 for contact in contacts:
-                        self.Contact.insert1(dict(key,ratname = data['ratname'],contact = contact.strip()))
+                        self.Contact.insert1(dict(ratname = data['ratname'],
+                                                  contact = contact.strip()))
