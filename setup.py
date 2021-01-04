@@ -11,5 +11,5 @@ setup(
     author='Vathes',
     author_email='support@vathes.com',
     packages=find_packages(exclude=[]),
-    install_requires=['datajoint>=0.12', 'dash', 'dash-bootstrap-components'],
+    install_requires=['datajoint>=0.12', 'dash', 'dash-bootstrap-components', 'python-dotenv'],
 )
