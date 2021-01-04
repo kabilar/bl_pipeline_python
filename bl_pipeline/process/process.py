@@ -48,9 +48,9 @@ MODULES = [
             module=(subject, subject_shadow),
             tables=[
                 'Rats',
-                'Rats.Contact',
+                # 'Rats.Contact',
                 'RatHistory',
-                'RatHistory.Contact'
+                # 'RatHistory.Contact'
             ]
         ),
     dict(
@@ -78,7 +78,7 @@ def ingest_shadow():
             print(f'Populating shadow table {table_name}')
             table_shadow.populate(**kwargs)
 
-
+# copy data from shadow table to new table
 def ingest_real():
 
     for m in MODULES:
@@ -91,6 +91,9 @@ def main():
     ingest_shadow()
     ingest_real()
 
+    # copy data from shadow table to new table
+    # subject.Rats.Contact.insert(subject_shadow.Rats.Contact)
+    # subject.RatHistory.Contact.insert(subject_shadow.RatHistory.Contact)
 
 if __name__ == '__main__':
     main()
