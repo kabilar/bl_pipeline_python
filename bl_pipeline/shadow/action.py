@@ -5,7 +5,7 @@ import datetime
 ratinfo = dj.create_virtual_module('ratinfo', 'bl_ratinfo')
 bdata   = dj.create_virtual_module('bdata', 'bl_bdata')
 
-# create shadow schemas
+# create shadow schema
 schema = dj.schema('bl_shadow_action')
 
 
@@ -18,7 +18,7 @@ class CalibrationInfoTbl(dj.Computed):
      rigid:                              INT(3)
      calibration_datetime:               DATETIME
      open_valve_time:                    DOUBLE
-     calibration_person:                 VARCHAR(32)            
+     calibration_person:                 VARCHAR(32)
      valve:                              VARCHAR(15)
      dispense:                           DOUBLE                  # amount dispensed
      isvalid:                            TINYINT(1)
@@ -28,7 +28,6 @@ class CalibrationInfoTbl(dj.Computed):
      def make(self,key):
           key_shadow = dict(calibrationid=key['calibration_info_tbl_id'])
           data = (bdata.CalibrationInfoTbl & key_shadow).fetch1()
-
           entry = dict(
                calibration_info_tbl_id  = data['calibrationid'],
                rigid                    = data['rig_id'],
@@ -47,11 +46,10 @@ class CalibrationInfoTbl(dj.Computed):
 class Mass(dj.Computed):
      definition = """
      -> ratinfo.Mass.proj(mass_id='weighing')
-     # mass_id:                    INT(10) AUTOINCREMENT      # original id 
      -----
      ratname:                      VARCHAR(8)
-     weigh_person:                 VARCHAR(32)             # renamed tech (initials) with weigh_person
-     weighing_datetime:            DATETIME                   # substitute "date" and "timeval" with weighing_datetime
+     weigh_person:                 VARCHAR(32)                   # renamed tech (initials) with weigh_person
+     weighing_datetime:            DATETIME
      mass=null:                    SMALLINT(5)
      """
      
@@ -77,7 +75,6 @@ class Mass(dj.Computed):
 class Rigwater(dj.Computed):
      definition = """
      -> ratinfo.Rigwater.proj(rigwater_id='id')
-     # rigwater_id:                   INT(10) AUTO_INCREMENT
      -----
      ratname:                         VARCHAR(8)
      earnedwater_datetime:            DATETIME                     
@@ -109,13 +106,12 @@ class Rigwater(dj.Computed):
 @schema
 class Schedule(dj.Computed):
      definition = """
-     -> ratinfo.Schedule.proj(schedule_id='schedentryid')
-     #schedule_id:                    INT(10) AUTO_INCREMENT        
+     -> ratinfo.Schedule.proj(schedule_id='schedentryid')      
      -----
-     ratname:                         VARCHAR(30)
-     experimenter:                    VARCHAR(30)
+     ratname=null:                    VARCHAR(30)
+     experimenter=null:               VARCHAR(30)
      schedule_date:                   DATE
-     schedule_timeslot:               INT(4)             #no need to be this large, currently there are only 9 timeslots
+     schedule_timeslot:               TINYINT
      rig:                             INT(11)
      instructions=null:               VARCHAR(250)       # 'Special instructions for the technicians'
      schedule_comments=null:          VARCHAR(250)       # Comments seen by experimenters, i.e. slot reserved for..., this is a special rig 6-poke, opto, phys...
@@ -144,7 +140,6 @@ class Schedule(dj.Computed):
 class Surgery(dj.Computed):
      definition = """
      -> ratinfo.Surgery.proj(surgery_old_id='id')
-     # surgery_old_id:                   INT(11) 
      -----
      ratname:                            VARCHAR(8)
      surgery_date:                       DATE
@@ -158,7 +153,7 @@ class Surgery(dj.Computed):
      brainregions:                       VARCHAR(40) 
      ketamine=null:                      FLOAT                # how many CC's of ketamine used
      buprenex=null:                      FLOAT                # how many CC's of buprenex used
-     surgery_notes=null:                 VARCHAR(500) 
+     surgery_notes=null:                 VARCHAR(600) 
      bregma=null:                        TINYBLOB             # AP, ML, DV  tinyblob for storage as vector (should we store it as three separate fields? ) 
      ia_zero=null:                       TINYBLOB             # AP, ML, DV  tinyblob for storage as vector (should we store it as three separate fields? )
      angle=0:                            FLOAT
@@ -198,7 +193,6 @@ class Surgery(dj.Computed):
 class TechSchedule(dj.Computed):
      definition = """
      -> ratinfo.TechSchedule
-     # AUTO_INCREMENT
      -----
      techschedule_date:               DATE
      day:                             VARCHAR(45)
@@ -226,15 +220,14 @@ class TechSchedule(dj.Computed):
 class Technotes(dj.Computed):
      definition = """
      -> ratinfo.Technotes.proj(technote_id='technoteid')
-     #technote_id                            INT(11) AUTO_INCREMENT
      -----
-     technote_datetime:                      DATETIME         #again, any key should be a unique number, datetime is not guaranteed to be unique
-     technician:                             VARCHAR(32) 
-     technote_rat=null:                      VARCHAR(8)       # nullable, definition only in python
-     technote_rig=null:                      INT(3)           # nullable, definition only in python
-     technote_experimenter=null:             VARCHAR(32)      # individual in the lab to receibe the technote nullable, definition only in python
+     technote_datetime:                      DATETIME
+     technician=null:                        VARCHAR(32) 
+     technote_rat=null:                      VARCHAR(8)       # definition only in python
+     technote_rig=null:                      INT(3)           # definition only in python
+     technote_experimenter=null:             VARCHAR(32)      # definition only in python, individual in the lab to receive the technote
      timeslot=null:                          TINYINT(1)
-     technotes_note:                         VARCHAR(500)
+     technotes_note:                         VARCHAR(800)
      flag=null:                              INT(3)
      """
      
