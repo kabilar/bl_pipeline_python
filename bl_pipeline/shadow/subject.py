@@ -37,10 +37,21 @@ class Rats(dj.Computed):
     def make(self, key):
         key_shadow = dict(internalID=key['rats_old_id'])
         data = (ratinfo.Rats & key_shadow).fetch1()
-        data_email = (ratinfo.Contacts & {'experimenter': data['experimenter']}).fetch1('email')
+
+        if len(ratinfo.Contacts.proj('experimenter') & {'experimenter': data['experimenter']}) == 1:
+            data_email = (ratinfo.Contacts & {'experimenter': data['experimenter']}).fetch1('email')
+            data_userid = data_email.split('@')[0]
+        elif data['experimenter'] in ['pbibawi', 'abondy', 'velliott']:
+            data_userid = data['experimenter']
+        elif data['experimenter'] in ['Peter Bibawi']:
+            data_userid = 'pbibawi'
+        else:
+            print(data['experimenter'])
+            return
+
         entry = dict(
             ratname             = data['ratname'],
-            user_id             = data_email.split('@')[0],
+            user_id             = data_userid,
             rats_old_id         = data['internalID'],
             free                = data['free'],
             comments            = data['comments'],
@@ -66,7 +77,8 @@ class Rats(dj.Computed):
                 contacts = data['contact'].split(',')
                 for contact in contacts:
                     self.Contact.insert1(dict(ratname=data['ratname'],
-                                              contact=contact.strip()))
+                                              contact=contact.strip()),
+                                              skip_duplicates=True)
 
     
 @schema
@@ -102,12 +114,26 @@ class RatHistory(dj.Computed):
     def make(self, key):
         key_shadow = dict(internalID=key['rathistory_old_id'])
         data = (ratinfo.RatHistory & key_shadow).fetch1()
-        data_email = (ratinfo.Contacts & {'experimenter': data['experimenter']}).fetch1('email')
+
+        if len(ratinfo.Contacts.proj('experimenter') & {'experimenter': data['experimenter']}) == 1:
+            data_email = (ratinfo.Contacts & {'experimenter': data['experimenter']}).fetch1('email')
+            data_userid = data_email.split('@')[0]
+        elif data['experimenter'] in ['pbibawi', 'abondy', 'velliott', 'lb6', 'jtb3']:
+            data_userid = data['experimenter']
+        elif data['experimenter'] in ['Peter Bibawi']:
+            data_userid = 'pbibawi'
+        elif data['experimenter'] in ['Nick Horbelt']:
+            data_userid = 'nhorbelt'
+        elif data['experimenter'] in ['Sarah Jo']:
+            data_userid = 'venditto'
+        else:
+            print(data['experimenter'])
+            return
 
         entry = dict(
             ratname                  = data['ratname'],
             logtime                  = data['logtime'],
-            user_id                  = data_email.split('@')[0],
+            user_id                  = data_userid,
             rathistory_old_id        = data['internalID'],
             free                     = data['free'],
             alert                    = data['alert'],
@@ -133,4 +159,5 @@ class RatHistory(dj.Computed):
                 contacts = data['contact'].split(',')
                 for contact in contacts:
                         self.Contact.insert1(dict(ratname = data['ratname'],
-                                                  contact = contact.strip()))
+                                                  contact = contact.strip()),
+                                                  skip_duplicates=True)
