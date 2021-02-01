@@ -1,9 +1,3 @@
-# Ingestion routine to copy data from source tables to new tables
-# source table -> shadow table -> new table
-# Shadow table allows for renaming of primary key
-# Shadow table has same definition of the new table, except that the primary key is the same as the source table
-# For each shadow table set the keys as a secondary field when not used as primary key
-
 import traceback
 import datajoint as dj
 
