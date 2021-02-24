@@ -1,17 +1,13 @@
-# Ingestion routine to copy data from source tables to new tables
-# source table -> shadow table -> new table
-# Shadow table allows for renaming of primary key
-# Shadow table has same definition of the new table, except that the primary key is the same as the source table
-# For each shadow table set the keys as a secondary field when not used as primary key
-
 import traceback
 import datajoint as dj
 
 from bl_pipeline.shadow import lab as lab_shadow
 from bl_pipeline.shadow import subject as subject_shadow
+from bl_pipeline.shadow import action as action_shadow
 
-from bl_pipeline import lab, subject
+from bl_pipeline import lab, subject, action
 
+dj.config["enable_python_native_blobs"] = True
 
 # copy data from shadow table (src_schema) to new table (target_schema)
 def copy_table(target_schema, src_schema, table_name, **kwargs):
@@ -46,12 +42,27 @@ MODULES = [
             module=(subject, subject_shadow),
             tables=[
                 'Rats',
-                'RatHistory'
+                # 'Rats.Contact',
+                'RatHistory',
+                # 'RatHistory.Contact'
             ]
         ),
+    dict(
+            module=(action, action_shadow),
+            tables=[
+                'CalibrationInfoTbl',
+                'Mass',
+                'Rigwater',
+                'Schedule',
+                'Surgery',
+                'TechSchedule',
+                'Technotes',
+                'Water'
+            ]
+        )
 ]
 
-
+# copy data from source tables to shadow tables
 def ingest_shadow():
 
     kwargs = dict(display_progress=True, suppress_errors=True)
@@ -61,7 +72,7 @@ def ingest_shadow():
             print(f'Populating shadow table {table_name}')
             table_shadow.populate(**kwargs)
 
-
+# copy data from shadow table to new table
 def ingest_real():
 
     for m in MODULES:
@@ -74,6 +85,9 @@ def main():
     ingest_shadow()
     ingest_real()
 
+    # copy data from shadow table to new table
+    # subject.Rats.Contact.insert(subject_shadow.Rats.Contact)
+    # subject.RatHistory.Contact.insert(subject_shadow.RatHistory.Contact)
 
 if __name__ == '__main__':
     main()
