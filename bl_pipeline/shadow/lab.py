@@ -34,12 +34,8 @@ class Contacts(dj.Computed):
 
     def make(self, key):
         key_shadow = dict(contactid=key['contacts_old_id'])
-
-        fields = ['contactid','experimenter','email', 'initials','telephone',
-                  'tag_letter','lab_manager','subscribe_all','tech_morning',
-                  'tech_afternoon','tech_computer','is_alumni','FullName',
-                  'tech_overnight','tag_RGB','tech_shifts','phone_carrier']
-
+        fields = ratinfo.Contacts.heading.names
+        for i in ['custom_rig_order','tag_RGB_old']: fields.remove(i)
         data = (ratinfo.Contacts & key_shadow).fetch(*fields, as_dict=True)[0]
 
         if key['contacts_old_id'] not in [53, 59, 97]:  # duplicate emails for contactid = 59 and 94; 53 and 71; 12 and 97
