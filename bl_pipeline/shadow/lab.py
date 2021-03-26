@@ -7,7 +7,6 @@ ratinfo = dj.create_virtual_module('ratinfo', 'bl_ratinfo')
 schema = dj.schema('bl_shadow_lab')
 
 
-# %%
 # copy data from source tables to shadow tables
 @schema
 class Contacts(dj.Computed):
@@ -35,7 +34,7 @@ class Contacts(dj.Computed):
 
     def make(self, key):
         key_shadow = dict(contactid=key['contacts_old_id'])
-        data_contactid, data_experimenter,data_email,data_initials,data_telephone,data_tag_letter,data_lab_manager,data_subscribe_all,data_tech_morning,data_tech_afternoon,data_tech_computer,data_is_alumni,data_FullName,data_tech_overnight,data_tag_RGB,data_tech_shifts,data_phone_carrier = (ratinfo.Contacts & key_shadow).fetch1('contactid','experimenter','email', 'initials','telephone','tag_letter','lab_manager','subscribe_all','tech_morning','tech_afternoon','tech_computer','is_alumni','FullName','tech_overnight','tag_RGB','tech_shifts','phone_carrier')
+        data_contactid,data_experimenter,data_email,data_initials,data_telephone,data_tag_letter,data_lab_manager,data_subscribe_all,data_tech_morning,data_tech_afternoon,data_tech_computer,data_is_alumni,data_FullName,data_tech_overnight,data_tag_RGB,data_tech_shifts,data_phone_carrier = (ratinfo.Contacts & key_shadow).fetch1('contactid','experimenter','email', 'initials','telephone','tag_letter','lab_manager','subscribe_all','tech_morning','tech_afternoon','tech_computer','is_alumni','FullName','tech_overnight','tag_RGB','tech_shifts','phone_carrier')
 
         if key['contacts_old_id'] not in [53, 59, 97]:  # duplicate emails for contactid = 59 and 94; 53 and 71; 12 and 97
             entry = dict(

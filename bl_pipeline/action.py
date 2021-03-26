@@ -6,7 +6,6 @@ from bl_pipeline import lab, subject
 schema = dj.schema('bl_new_action')
 
 
-# %%
 @schema
 class CalibrationInfoTbl(dj.Manual):
      definition = """
