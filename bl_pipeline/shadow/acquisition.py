@@ -80,13 +80,8 @@ class Sessions(dj.Computed):
      """
 
      def make(self,key):
-          fields = ['sessid','ratname','experimenter','hostname','sessiondate',
-                    'starttime','endtime','protocol','n_done_trials','comments',
-                    'settings_file','settings_path','data_file','data_path',
-                    'video_file','video_path','total_correct','right_correct',
-                    'left_correct','percent_violations','left_pokes',
-                    'center_pokes','right_pokes','IP_addr','foodpuck']
-
+          fields = bdata.Sessions2020.heading.names
+          fields.remove('protocol_data')
           data = (bdata.Sessions2020 & key).fetch(*fields, as_dict=True)[0]
           email = (ratinfo.Contacts & f'experimenter="{data['experimenter']}"').fetch1('email')
 
