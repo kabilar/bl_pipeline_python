@@ -37,14 +37,12 @@ class Rats(dj.Manual):
 @schema
 class RatHistory(dj.Manual):
     definition = """
-    -> Rats
-    logtime=CURRENT_TIMESTAMP   : timestamp       # IF THIS IS A HISTORICAL RECORD OF THE RATS TABLE THEN IT SHOULD HAVE ALL THE SAME COLUMNS
+    rathistory_id               : int(10) AUTO_INCREMENT # was a unique number assigned to each rat history change
     -----
+    -> Rats
     -> lab.Contacts
-    rathistory_old_id           : int(10)
+    logtime=CURRENT_TIMESTAMP   : timestamp       # IF THIS IS A HISTORICAL RECORD OF THE RATS TABLE THEN IT SHOULD HAVE ALL THE SAME COLUMNS
     free=0                      : tinyint(1)      # 'whether or not the rat is available for use by any other experimenter',
-    alert=0                     : tinyint(1)      # 'whether or not there is an alert for special attention for the rat (e.g. sick, recent surgery, etc.)',
-    training=0                  : tinyint(1)
     comments=null               : varchar(500)
     waterperday=30              : int(11)         # '0 for free water, otherwise the number of minutes the rat has access to water each day (may vary over time)',
     recovering=0                : tinyint(1)      # 'whether or not the rat is currently in recovery from surgery',
@@ -53,9 +51,8 @@ class RatHistory(dj.Manual):
     force_free_water=0          : tinyint(3)
     date_sac=null               : date
     force_dep_water=0           : tinyint(3)
-    bring_up_at=0               : tinyint(1)      # 'set with which rat should be brought upstairs',
-    bringupday=null             : varchar(7)
-    ignored_by_watermeister=0   : tinyint(1)
+    larid=null:                 : int(10)         # the ID assigned to the rat by LAR (I don't think we use this)
+    israt=1:                    : tinyint(1)      # 1 if rat, 0 if mouse
     """
 
     class Contact(dj.Part):

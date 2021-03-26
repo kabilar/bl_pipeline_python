@@ -9,7 +9,6 @@ bdata   = dj.create_virtual_module('bdata', 'bl_bdata')
 schema = dj.schema('bl_shadow_action')
 
 
-# %%
 @schema
 class CalibrationInfoTbl(dj.Computed):
      definition = """

@@ -1,6 +1,7 @@
 import datajoint as dj
 from bl_pipeline.shadow import lab
 
+
 ratinfo = dj.create_virtual_module('ratinfo', 'bl_ratinfo')
 
 schema = dj.schema('bl_shadow_subject')
@@ -84,7 +85,7 @@ class Rats(dj.Computed):
 @schema
 class RatHistory(dj.Computed):
     definition = """
-    -> ratinfo.RatHistory.proj(rathistory_old_id='internalID')
+    -> ratinfo.RatHistory.proj(rathistory_id='internalID')
     -----
     ratname                     : varchar(8)      # Unique rat name, 1 letter 3 numbers
     logtime=CURRENT_TIMESTAMP   : timestamp       # IF THIS IS A HISTORICAL RECORD OF THE RATS TABLE THEN IT SHOULD HAVE ALL THE SAME COLUMNS
@@ -112,7 +113,7 @@ class RatHistory(dj.Computed):
         """
 
     def make(self, key):
-        key_shadow = dict(internalID=key['rathistory_old_id'])
+        key_shadow = dict(internalID=key['rathistory_id'])
         data = (ratinfo.RatHistory & key_shadow).fetch1()
 
         if len(ratinfo.Contacts.proj('experimenter') & {'experimenter': data['experimenter']}) == 1:
@@ -134,7 +135,7 @@ class RatHistory(dj.Computed):
             ratname                  = data['ratname'],
             logtime                  = data['logtime'],
             user_id                  = data_userid,
-            rathistory_old_id        = data['internalID'],
+            rathistory_id            = data['internalID'],
             free                     = data['free'],
             alert                    = data['alert'],
             training                 = data['training'],
