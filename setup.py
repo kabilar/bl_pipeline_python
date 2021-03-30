@@ -4,6 +4,9 @@ from os import path
 
 here = path.abspath(path.dirname(__file__))
 
+with open(path.join(here, 'requirements.txt')) as f:
+    requirements = f.read().splitlines()
+
 setup(
     name='brody_lab_pipeline',
     version='0.0.0',
@@ -11,5 +14,5 @@ setup(
     author='Vathes',
     author_email='support@vathes.com',
     packages=find_packages(exclude=[]),
-    install_requires=['datajoint>=0.13', 'dash', 'dash-bootstrap-components', 'python-dotenv'],
+    install_requires=requirements,
 )

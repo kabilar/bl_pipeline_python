@@ -1,0 +1,5 @@
+dash
+dash-bootstrap-components
+python-dotenv
+datajoint>=0.13
+element-array-ephys @ git+https://github.com/ttngu207/element-array-ephys.git@chronic-probe-insertion
