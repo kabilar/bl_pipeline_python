@@ -9,7 +9,7 @@
 <br> With conda:
 `conda create -n bl_env python==3.7`
 <br> After it is created: `conda activate bl_env`
-4. Install this repository by moving into this repository and run `pip install -e .`
+4. Install this repository by moving into this repository and run `pip install -e .` In this way, the modifications on the pipeline will be reflected immediately on the imported modules.
 5. Configure the `dj_local_conf.json`. In the root of the clone repository, create a new file `dj_local_conf.json` with the following template:
 ```json
 {
@@ -33,7 +33,6 @@
 
 
 ## Developer Notes
----
 + Create tables with new definitions and copy to new server.
 
 ### Ingestion routine
