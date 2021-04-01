@@ -1,7 +1,7 @@
 import datajoint as dj
 import pathlib
 
-from bl_pipeline import acquisition
+from bl_pipeline import lab, subject, acquisition
 
 from element_array_ephys import probe as probe_element
 from element_array_ephys import ephys as ephys_element
@@ -51,8 +51,19 @@ def get_ephys_root_data_dir():
     return pathlib.Path(data_dir) if data_dir else None
 
 
+def get_clustering_root_data_dir():
+    data_dir = dj.config.get('custom', {}).get('clustering_root_data_dir', None)
+    return pathlib.Path(data_dir) if data_dir else None
+
+
 def get_session_directory(session_key):
-    sess_dir = pathlib.Path((acquisition.Sessions & session_key).fetch1('data_path'))
+    root_dir = get_ephys_root_data_dir()
+    experimenter, ratname, session_date = \
+        (lab.Contacts *
+         (subject.Rats *
+          (acquisition.Sessions.proj('session_date', ratname='session_rat') & session_key))).fetch1(
+                'experimenter', 'ratname', 'session_date')
+    sess_dir = root_dir / experimenter / ratname / f'{ratname}_{session_date.strftime("%Y_%m_%d")}'
     return sess_dir.as_posix()
 
 
