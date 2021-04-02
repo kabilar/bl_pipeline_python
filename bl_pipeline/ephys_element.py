@@ -26,14 +26,14 @@ For more detail, check the docstring of the imaging element:
 """
 
 # 1. Schema names
-probe_schema_name = dj.config['database.prefix'] + 'probe_element'
-ephys_schema_name = dj.config['database.prefix'] + 'ephys_element'
+probe_schema_name = dj.config['custom']['database.prefix'] + 'probe_element'
+ephys_schema_name = dj.config['custom']['database.prefix'] + 'ephys_element'
 
 # 2. Upstream tables
 from bl_pipeline.acquisition import Sessions as Session
 from bl_pipeline.subject import Rats as Subject
 
-schema = dj.schema(dj.config['database.prefix'] + 'lab')
+schema = dj.schema(dj.config['custom']['database.prefix'] + 'lab')
 
 
 @schema
