@@ -1,7 +1,6 @@
 # BrodyLab Python-based Data Pipeline
 
 ## User instructions
----
 ### Instructions to set up a working environment
 1. To keep your own version of the pipeline and contribute, fork this repository to your own account.
 2. Clone your fork with `git clone {your_fork_url}.git`
