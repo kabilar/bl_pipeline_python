@@ -31,7 +31,8 @@ def process_session(sess_key):
 
     :param sess_key: a `KEY` of `acquisition.Sessions`
     """
-    subj_key = (subject.Rats & sess_key).fetch1('KEY')
+    subj_key = (subject.Rats &
+                (acquisition.Sessions.proj(ratname='session_rat') & sess_key)).fetch1('KEY')
 
     sess_dir = pathlib.Path(get_session_directory(sess_key))
     ephys_meta_filepaths = [fp for fp in sess_dir.rglob('*.ap.meta')]
