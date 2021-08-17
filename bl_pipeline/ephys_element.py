@@ -1,3 +1,4 @@
+from os import PathLike
 import datajoint as dj
 import pathlib
 
@@ -30,7 +31,7 @@ probe_schema_name = dj.config['custom']['database.prefix'] + 'probe_element'
 ephys_schema_name = dj.config['custom']['database.prefix'] + 'ephys_element'
 
 # 2. Upstream tables
-from bl_pipeline.acquisition import Sessions as Session
+from bl_pipeline.acquisition import AcquisitionSessions as AcquisitionSession
 from bl_pipeline.subject import Rats as Subject
 
 schema = dj.schema(dj.config['custom']['database.prefix'] + 'lab')
@@ -58,6 +59,14 @@ def get_clustering_root_data_dir():
 
 def get_session_directory(session_key):
     root_dir = get_ephys_root_data_dir()
+    sess_dir = (AcquisitionSession & session_key).fetch('acquisition_raw_rel_path')
+
+    if len(sess_dir) == 1:
+        return pathlib.Path(root_dir, sess_dir[0]).as_posix()
+    else:
+        return ''
+
+    '''
     experimenter, ratname, session_date = \
         (lab.Contacts *
          (subject.Rats *
@@ -65,6 +74,25 @@ def get_session_directory(session_key):
                 'experimenter', 'ratname', 'session_date')
     sess_dir = root_dir / experimenter / ratname / f'{ratname}_{session_date.strftime("%Y_%m_%d")}'
     return sess_dir.as_posix()
+    '''
+
+def get_session_cluster_directory(session_key):
+    root_dir = get_clustering_root_data_dir()
+    sess_dir = (AcquisitionSession & session_key).fetch('acquisition_post_rel_path')
+
+    if len(sess_dir) == 1:
+        return pathlib.Path(root_dir, sess_dir[0]).as_posix()
+    else:
+        return ''
+
+def get_session_cluster_rel_directory(session_key):
+    root_dir = get_clustering_root_data_dir()
+    sess_dir = (AcquisitionSession & session_key).fetch('acquisition_post_rel_path')
+
+    if len(sess_dir) == 1:
+        return pathlib.Path(sess_dir[0]).as_posix()
+    else:
+        return ''
 
 
 # ------------- Activate "ephys" schema -------------

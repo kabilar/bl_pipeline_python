@@ -1,4 +1,10 @@
+scipy
 python-dotenv
-datajoint>=0.13
-element-array-ephys @ git+https://github.com/ttngu207/element-array-ephys.git@chronic-probe-insertion
-jupytext
+element-calcium-imaging
+element-array-ephys
+scanreader @ git+https://github.com/atlab/scanreader.git
+pandas
+numpy
+astropy
+jupyterlab
+bitstring
