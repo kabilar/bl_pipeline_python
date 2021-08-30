@@ -1,8 +1,8 @@
 import datajoint as dj
 
 
-bdata   = dj.create_virtual_module('bdata', 'bdatatest')
-ratinfo = dj.create_virtual_module('ratinfo', 'ratinfotest')
+bdata   = dj.create_virtual_module('bdata', 'bl_bdata')
+ratinfo = dj.create_virtual_module('ratinfo', 'bl_ratinfo')
 
 # create new schema
 schema = dj.schema('bl_shadow_acquisition')
@@ -43,7 +43,7 @@ class SessStarted(dj.Computed):
                      
                self.insert1(entry)
           else:
-               print(data['ratname'])
+               print(data)
 
 
 @schema
@@ -80,12 +80,13 @@ class Sessions(dj.Computed):
      """
 
      def make(self,key):
-          fields = bdata.Session.heading.names
+          fields = bdata.Sessions.heading.names
           fields.remove('protocol_data')
           data = (bdata.Sessions & key).fetch(*fields, as_dict=True)[0]
-          email = (ratinfo.Contacts & f'experimenter="{data['experimenter']}"').fetch1('email')
 
-          entry = dict(
+          try:
+               email = (ratinfo.Contacts & f"experimenter='{data['experimenter']}'").fetch1('email')
+               entry = dict(
                sessid                   = data['sessid'],
                session_rat              = data['ratname'],
                session_userid           = email.split('@')[0],
@@ -113,8 +114,12 @@ class Sessions(dj.Computed):
                right_pokes              = data['right_pokes'],
                ip_addr                  = data['IP_addr'],
                foodpuck                 = data['foodpuck']
-          )
-          self.insert1(entry)
+               )
+               self.insert1(entry)
+          except:
+               print('no email or user_id for experimenter ', data['experimenter'])
+               print('sessid ', data['sessid'], ' not ingested')
+          
 
 @schema
 class AcquisitionSessions(dj.Manual):

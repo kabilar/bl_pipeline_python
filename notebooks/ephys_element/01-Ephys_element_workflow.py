@@ -29,13 +29,13 @@ try_find_conf_file()
 
 import datajoint as dj
 from bl_pipeline import lab, subject, acquisition
-from bl_pipeline.ephys_element import ephys_element, probe_element, get_session_cluster_directory
+from bl_pipeline.ephys_element import ephys_element, probe_element, get_session_cluster_rel_directory
 
 # # Pipeline structure
 
 # + `dj.Diagram` enables checking pipeline structure and table dependencies. [markdown]
-# # + dj.Diagram is a useful command to visualize the workflow structure and table dependencies.
-# # + Two element modules have been installed into `bl_pipeline`: `probe_element` and `ephys_element`
+# # # # + dj.Diagram is a useful command to visualize the workflow structure and table dependencies.
+# # # # + Two element modules have been installed into `bl_pipeline`: `probe_element` and `ephys_element`
 # + Two DataJoint elements `probe_element` and `ephys_element` have been installed into `bl_pipeline`
 dj.Diagram(subject.Rats) + dj.Diagram(acquisition.Sessions) + dj.Diagram(probe_element) + dj.Diagram(ephys_element)
 
@@ -44,8 +44,6 @@ dj.Diagram(subject.Rats) + dj.Diagram(acquisition.Sessions) + dj.Diagram(probe_e
 # + Each entry in the table `acquisition.Sessions` describes an experimental session within a particular date.
 dj.Diagram(subject.Rats) + dj.Diagram(acquisition.Sessions) + dj.Diagram(probe_element.Probe) + \
 (dj.Diagram(ephys_element.ProbeInsertion) + 1)
-# + In this experiment with chronic probe insertions, the table `ephys_element.ProbeInsertion` directly depends on `subject.Rats`
-# + Each entry in `acquisition.Sessions` represents an experimental session on a particular date.
 # + Each entry in `ephys_element.EphysRecording` is for a particular probe insertion and a session.
 
 # As an example, we will work on the following session throughout the notebook:
@@ -53,7 +51,7 @@ dj.Diagram(subject.Rats) + dj.Diagram(acquisition.Sessions) + dj.Diagram(probe_e
 # + For each combination of `acquisition.Sessions` and `ephys_element.ProbeInsertion`, there is a `ephys_element.EphysRecording`
 session_key = (acquisition.Sessions & 'session_rat="A230"' & 'session_date="2019-08-26"').fetch1('KEY')
 session_info  = (acquisition.Sessions & 'session_rat="A230"' & 'session_date="2019-08-26"').fetch1()
-#session_info
+session_key
 # -
 # ## Ingest Probe and ProbeInsertion by ephys_element_ingest
 
@@ -68,10 +66,7 @@ ephys_element_ingest.process_session(session_key)
 
 probe_element.Probe() & session_key
 
-# +
-
 ephys_element.ProbeInsertion()
-# -
 
 ephys_element.EphysRecording() & session_key
 
@@ -96,7 +91,7 @@ probe_element.ElectrodeConfig.Electrode()
 
 # 2. **ephys_element.EphysRecording**: note here that it refers to a particular electrode_config identified with a hash.
 
-ephys_element.EphysRecording() & session_key
+ephys_element.EphysRecording()
 
 # 3. **ephys_element.EphysRecording.EphysFile**
 
@@ -149,15 +144,10 @@ ephys_element.ClusteringParamSet()
 
 ephys_element.ClusteringTask()
 
-clust_dir = get_session_cluster_directory(session_key)
-clust_dir = clust_dir.replace(dj.config['custom']['clustering_root_data_dir'],'')
-clust_dir
-
 # We are then able to insert an entry into the `ClusteringTask` table. One important field of the table is `clustering_output_dir`, which specifies the Kilosort2 output directory for the later processing.  
 # **Note**: this output dir is a relative path to be combined with `clustering_root_directory` in the config file.
 
-clust_dir = get_session_cluster_directory(session_key)
-clust_dir = clust_dir.replace(dj.config['custom']['clustering_root_data_dir'],'')
+clust_dir = get_session_cluster_rel_directory(session_key)
 ephys_element.ClusteringTask.insert1(
     dict(session_key, ratname=session_info['session_rat'], insertion_number=0, paramset_idx=0, clustering_output_dir=clust_dir), skip_duplicates=True)
 
@@ -207,6 +197,8 @@ ephys_element.LFP.Electrode & session_key
 dj.Diagram(ephys_element.CuratedClustering.Unit) + ephys_element.Waveform
 
 # + Waveform: `Waveform` table computes the average spike waveform of the channel with peak amplites. It takes a while to populate depending on the size of the data.
+
+
 
 # + The `probe_element.EelectrodeConfig` table conains the configuration information of the electrodes used, i.e. which 384 electrodes out of the total 960 on the probe were used in this ephys session, while the table `ephys_element.EphysRecording` specify which ElectrodeConfig is used in a particular ephys session.
 ephys_element.Waveform.populate(session_key, display_progress=True)
