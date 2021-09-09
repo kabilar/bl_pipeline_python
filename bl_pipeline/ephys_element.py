@@ -2,25 +2,27 @@ from os import PathLike
 import datajoint as dj
 import pathlib
 
-from bl_pipeline import lab, subject, acquisition
-
 from element_array_ephys import probe as probe_element
 from element_array_ephys import ephys as ephys_element
 
 """
 ------ Gathering requirements to activate the ephys elements ------
 To activate the ephys elements, we need to provide:
+
 1. Schema names
     + schema name for the probe module
     + schema name for the ephys module
+
 2. Upstream tables
     + Subject table
     + Session table
     + SkullReference table - Reference table for InsertionLocation, specifying the skull reference
                  used for probe insertion location (e.g. Bregma, Lambda)
+
 3. Utility functions
     + get_ephys_root_data_dir()
     + get_session_directory()
+
 For more detail, check the docstring of the imaging element:
     help(probe_element.activate)
     help(ephys_element.activate)
@@ -31,7 +33,8 @@ probe_schema_name = dj.config['custom']['database.prefix'] + 'probe_element'
 ephys_schema_name = dj.config['custom']['database.prefix'] + 'ephys_element'
 
 # 2. Upstream tables
-from bl_pipeline.acquisition import AcquisitionSessions as AcquisitionSession
+from bl_pipeline import lab, subject, acquisition
+from bl_pipeline.acquisition import AcquisitionSessions as Session
 from bl_pipeline.subject import Rats as Subject
 
 schema = dj.schema(dj.config['custom']['database.prefix'] + 'lab')
