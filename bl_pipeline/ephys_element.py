@@ -99,7 +99,4 @@ def get_session_cluster_rel_directory(session_key):
 ephys_element.activate(ephys_schema_name, probe_schema_name, linking_module=__name__)
 
 
-# ------------- Create Neuropixels probe entries -------------
-for probe_type in ('neuropixels 1.0 - 3A', 'neuropixels 1.0 - 3B',
-                   'neuropixels 2.0 - SS', 'neuropixels 2.0 - MS'):
-    probe_element.ProbeType.create_neuropixels_probe(probe_type)
+
