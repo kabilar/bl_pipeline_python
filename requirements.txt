@@ -1,7 +1,7 @@
 scipy
 python-dotenv
 element-calcium-imaging
-element-array-ephys
+element-array-ephys @ git+https://github.com/ttngu207/element-array-ephys.git@chronic_and_acute
 scanreader @ git+https://github.com/atlab/scanreader.git
 pandas
 numpy
