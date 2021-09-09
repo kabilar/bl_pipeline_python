@@ -3,7 +3,7 @@ import datajoint as dj
 import pathlib
 
 from element_array_ephys import probe as probe_element
-from element_array_ephys import ephys as ephys_element
+from element_array_ephys import ephys_chronic as ephys_element
 
 """
 ------ Gathering requirements to activate the ephys elements ------
