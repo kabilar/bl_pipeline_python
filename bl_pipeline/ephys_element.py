@@ -55,9 +55,6 @@ def get_ephys_root_data_dir():
     return pathlib.Path(data_dir) if data_dir else None
 
 
-def get_clustering_root_data_dir():
-    data_dir = dj.config.get('custom', {}).get('clustering_root_data_dir', None)
-    return pathlib.Path(data_dir) if data_dir else None
 
 
 def get_session_directory(session_key):
@@ -78,24 +75,6 @@ def get_session_directory(session_key):
     sess_dir = root_dir / experimenter / ratname / f'{ratname}_{session_date.strftime("%Y_%m_%d")}'
     return sess_dir.as_posix()
     '''
-
-def get_session_cluster_directory(session_key):
-    root_dir = get_clustering_root_data_dir()
-    sess_dir = (AcquisitionSession & session_key).fetch('acquisition_post_rel_path')
-
-    if len(sess_dir) == 1:
-        return pathlib.Path(root_dir, sess_dir[0]).as_posix()
-    else:
-        return ''
-
-def get_session_cluster_rel_directory(session_key):
-    root_dir = get_clustering_root_data_dir()
-    sess_dir = (AcquisitionSession & session_key).fetch('acquisition_post_rel_path')
-
-    if len(sess_dir) == 1:
-        return pathlib.Path(sess_dir[0]).as_posix()
-    else:
-        return ''
 
 
 # ------------- Activate "ephys" schema -------------
