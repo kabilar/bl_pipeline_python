@@ -98,5 +98,5 @@ def get_session_cluster_rel_directory(session_key):
 # ------------- Activate "ephys" schema -------------
 ephys_element.activate(ephys_schema_name, probe_schema_name, linking_module=__name__)
 
-
+ephys_element.EphysRecording.key_source = Session.proj(...,ratname='session_rat') * ephys_element.ProbeInsertion
 
