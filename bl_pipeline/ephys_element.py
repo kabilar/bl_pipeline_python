@@ -59,7 +59,7 @@ def get_ephys_root_data_dir():
 
 def get_session_directory(session_key):
     root_dir = get_ephys_root_data_dir()
-    sess_dir = (AcquisitionSession & session_key).fetch('acquisition_raw_rel_path')
+    sess_dir = (Session & session_key).fetch('acquisition_raw_rel_path')
 
     if len(sess_dir) == 1:
         return pathlib.Path(root_dir, sess_dir[0]).as_posix()
