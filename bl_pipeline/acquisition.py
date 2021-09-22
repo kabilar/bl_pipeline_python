@@ -54,7 +54,7 @@ class Sessions(dj.Manual):
      """
 
 @schema
-class AcquisitionSessions(dj.Manual):
+class AcquisitionSessionsOld(dj.Manual):
      definition = """
      ->Sessions
      -----
@@ -65,5 +65,34 @@ class AcquisitionSessions(dj.Manual):
      acquisition_raw_abs_path=null:     VARCHAR(200)    # absoulte path of raw files 
      acquisition_raw_rel_path=null:     VARCHAR(200)    # relative path (from ephys or imaging root dir)
      acquisition_post_abs_path=null:    VARCHAR(200)    # absoulte path of post processing file (clustered/segmented)
+     acquisition_post_rel_path=null:    VARCHAR(200)    # relative path (from ephys or imaging  clustering/segmentation root dir)
+     """
+
+
+@schema
+class PreAcquisitionSessions(dj.Manual):
+     definition = """
+     ->Sessions
+     directory_num:                     INT(11)      # Counts the number of possible directory mathces for the session
+     -----
+     session_rat:                       VARCHAR(8)      # ratname inherited from rats table
+     session_userid:                    VARCHAR(32)     # rat owner inherited from contacts table
+     session_rigid:                     INT(3)          # rig id number inherited from riginfo table
+     acquisition_type:                  VARCHAR(32)     # ephys or imaging
+     acquisition_raw_rel_path=null:     VARCHAR(200)    # relative path (from ephys or imaging root dir)
+     acquisition_post_rel_path=null:    VARCHAR(200)    # relative path (from ephys or imaging  clustering/segmentation root dir)
+     correct_dirs:                      TINYINT(1)      # flag to indicate correct directory combination
+     """
+
+@schema
+class AcquisitionSessions(dj.Manual):
+     definition = """
+     ->Sessions
+     -----
+     session_rat:                       VARCHAR(8)      # ratname inherited from rats table
+     session_userid:                    VARCHAR(32)     # rat owner inherited from contacts table
+     session_rigid:                     INT(3)          # rig id number inherited from riginfo table
+     acquisition_type:                  VARCHAR(32)     # ephys or imaging
+     acquisition_raw_rel_path=null:     VARCHAR(200)    # relative path (from ephys or imaging root dir)
      acquisition_post_rel_path=null:    VARCHAR(200)    # relative path (from ephys or imaging  clustering/segmentation root dir)
      """
