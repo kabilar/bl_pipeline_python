@@ -2,11 +2,11 @@ from scripts.conf_file_finding import try_find_conf_file
 try_find_conf_file()
 
 import datajoint as dj
+
 from bl_pipeline import lab, subject, acquisition
 from bl_pipeline.ephys_element import ephys_element, probe_element
-from bl_pipeline.acquisition import AcquisitionSessions as Session
-
 from bl_pipeline.ingest import ephys_element_ingest
+from bl_pipeline.acquisition import AcquisitionSessions as Session
 
 params_ks = {
     "fs": 30000,
@@ -68,4 +68,5 @@ for session_key in (Session & 'session_rat="A249"').fetch('KEY'):#session_rat, s
 
     ephys_element.CuratedClustering.populate(session_key, display_progress=True)
     ephys_element.LFP.populate(session_key, display_progress=True)
-    ephys_element.Waveform.populate(session_key, display_progress=True)
+    ephys_element.WaveformSet.populate(session_key, display_progress=True)
+
