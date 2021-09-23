@@ -2,6 +2,7 @@ from os import PathLike
 import datajoint as dj
 import pathlib
 
+from element_data_loader import path_utils
 from element_array_ephys import probe as probe_element
 from element_array_ephys import ephys_chronic as ephys_element
 
@@ -51,18 +52,19 @@ class SkullReference(dj.Lookup):
 # 3. Utility functions
 
 def get_ephys_root_data_dir():
-    data_dir = dj.config.get('custom', {}).get('ephys_root_data_dir', None)
+    root_data_dirs = dj.config.get('custom', {}).get('ephys_root_data_dir', None)
 
-    return [pathlib.Path(data_dir) for data_dir in dj.config.get('custom', {}).get('ephys_root_data_dir', None)]
-
-def get_session_directory(session_key):
-    root_dir = get_ephys_root_data_dir()
-    sess_dir = (Session & session_key).fetch('acquisition_raw_rel_path')
-
-    if len(sess_dir) == 1:
-        return pathlib.Path(root_dir, sess_dir[0]).as_posix()
+    if len(root_data_dirs) == 1:
+        return pathlib.Path(root_data_dirs)
     else:
-        return ''
+        return [pathlib.Path(root_dir) for root_dir in root_data_dirs]
+
+def get_session_directory(session_key): 
+    root_dirs = get_ephys_root_data_dir()
+    relative_dir = (Session & session_key).fetch1('acquisition_raw_rel_path')
+    session_dir = path_utils.find_full_path(root_dirs, relative_dir)
+
+    return session_dir.as_posix()
 
     '''
     experimenter, ratname, session_date = \
@@ -78,5 +80,6 @@ def get_session_directory(session_key):
 # ------------- Activate "ephys" schema -------------
 ephys_element.activate(ephys_schema_name, probe_schema_name, linking_module=__name__)
 
-ephys_element.EphysRecording.key_source = Session.proj(...,ratname='session_rat') * ephys_element.ProbeInsertion
+ephys_element.EphysRecording.key_source = Session.proj(ratname='session_rat') * ephys_element.ProbeInsertion
 
+Session = Session.proj(...,ratname='session_rat')
