@@ -11,8 +11,8 @@ setup(
     name='brody_lab_pipeline',
     version='0.0.0',
     description='DataJoint pipeline for Carlos Bordy Lab',
-    author='Vathes',
-    author_email='support@vathes.com',
+    author='DataJoint',
+    author_email='support@datajoint.com',
     packages=find_packages(exclude=[]),
     install_requires=requirements,
 )
