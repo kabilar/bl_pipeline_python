@@ -10,7 +10,7 @@ with open(path.join(here, 'requirements.txt')) as f:
 setup(
     name='brody_lab_pipeline',
     version='0.0.0',
-    description='DataJoint pipeline for Carlos Bordy Lab',
+    description='DataJoint pipeline for Carlos Brody Lab',
     author='DataJoint',
     author_email='support@datajoint.com',
     packages=find_packages(exclude=[]),
