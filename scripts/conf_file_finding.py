@@ -1,0 +1,42 @@
+
+import os
+import pathlib
+
+def chdir_to_root():
+
+    print('perro')
+    root_dir_found = 0
+    conf_file_found = 0
+    while 1:
+        
+        current_dir = os.getcwd()
+        print(current_dir)
+        bl_dir = pathlib.Path(current_dir,'bl_pipeline')
+        if os.path.isdir(bl_dir):
+            root_dir_found = 1
+            if os.path.isfile(pathlib.Path(current_dir,'dj_local_conf.json')):
+                conf_file_found = 1
+        if root_dir_found:
+            break
+        os.chdir('..')
+        new_current_dir = os.getcwd()
+        if str(current_dir) == str(new_current_dir):
+            break
+
+    return root_dir_found, conf_file_found
+
+
+def try_find_conf_file():
+
+    print('que pues')
+
+    root_dir_found, conf_file_found = chdir_to_root()
+    if root_dir_found and conf_file_found:
+        print('Local configuration file found !!, no need to run the configuration (unless configuration has changed)')
+    elif root_dir_found:
+        print('Local configuration file not found. Ignore this if you have a global config. Run configuration notebook otherwise')
+    else:
+        print('Root dir not found, change this notebook to the project folder')
+
+def perro():
+    print('cabula')
