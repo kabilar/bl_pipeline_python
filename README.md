@@ -13,7 +13,7 @@ The python data pipeline defined for BrodyLab.
 ## Installation with conda
 
 1. Open a new terminal 
-2. Clone this repository: `git@github.com:BrainCOGS/bl_pipeline_python.git`
+2. Clone this repository: `git@github.com:Brody-Lab/bl_pipeline_python.git`
     - If you cannot clone repositories with ssh, [set keys](https://docs.github.com/en/authentication/connecting-to-github-with-ssh/generating-a-new-ssh-key-and-adding-it-to-the-ssh-agent)
 3. Create a conda environment: `conda create -n u19_datajoint_env python==3.7`.
 4. Activate environment: `conda activate u19_datajoint_env`.   **(Activate environment each time you use the project)**
