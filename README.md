@@ -16,8 +16,8 @@ The python data pipeline defined for BrodyLab.
 2. Clone this repository: `git@github.com:Brody-Lab/bl_pipeline_python.git`
     - If you cannot clone repositories with ssh, [set keys](https://docs.github.com/en/authentication/connecting-to-github-with-ssh/generating-a-new-ssh-key-and-adding-it-to-the-ssh-agent)
 3. Create a conda environment: `conda create -n bl_pipeline_python_env python==3.7`.
-4. Activate environment: `conda activate u19_datajoint_env`.   **(Activate environment each time you use the project)**
-5. Change directory to this repository `cd U19_pipeline_python`.
+4. Activate environment: `conda activate bl_pipeline_python_env`.   **(Activate environment each time you use the project)**
+5. Change directory to this repository `cd bl_pipeline_python`.
 6. Install all required libraries `pip install -e .`
 7. Datajoint Configuration: `jupyter notebook notebooks/00-datajoint-configuration.ipynb` 
 
