@@ -2,7 +2,7 @@ from os import PathLike
 import datajoint as dj
 import pathlib
 
-from element_data_loader import path_utils
+from element_data_loader import utils as path_utils
 from element_array_ephys import probe as probe_element
 from element_array_ephys import ephys_chronic as ephys_element
 
