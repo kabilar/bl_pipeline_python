@@ -1,34 +1,25 @@
-# BrodyLab Python-based Data Pipeline
+# bl_pipeline_python
 
-## User instructions
-### Instructions to set up a working environment
-1. To keep your own version of the pipeline and contribute, fork this repository to your own account.
-2. Clone your fork with `git clone {your_fork_url}.git`
-3. It is highly recommended to create a virtual environment either with virtualenv or conda.
-<br> With conda:
-`conda create -n bl_env python==3.7`
-<br> After it is created: `conda activate bl_env`
-4. Install this repository by moving into this repository and run `pip install -e .` In this way, the modifications on the pipeline will be reflected immediately on the imported modules.
-5. Configure the `dj_local_conf.json`. In the root of the clone repository, create a new file `dj_local_conf.json` with the following template:
-```json
-{
-  "database.host": "<hostname>",
-  "database.user": "<username>",
-  "database.password": "<password>",
-  "loglevel": "INFO",
-  "safemode": true,
-  "display.limit": 7,
-  "display.width": 14,
-  "display.show_tuple_count": true,
-  "custom": {
-      "database.prefix": "bl_new_",
-      "ephys_root_data_dir": "<directory>" # root directory to the ephys raw data (archive drive), specific to each machine, e.g. On linux, `/mnt/archive/brody/RATTER/PhysData/Raw/`
-      "clusterings_root_data_dir": "<directory>" # root directory to ks2 processed data (bucket), specific to each machine, e.g. On linux, `/mnt/bucket/labs/brody/RATTER/PhysData/`
-    }
-}
-```
-6. Start a python kernel under the root directory and datajoint will be configured properly.
+The python data pipeline defined for BrodyLab.
 
+# Installation
+
+## Prerequisites
+
+1. Install conda on your system:  https://conda.io/projects/conda/en/latest/user-guide/install/index.html
+2. If running in Windows get [git](https://gitforwindows.org/)
+3. (Optional for ERDs) [Install graphviz](https://graphviz.org/download/)
+
+## Installation with conda
+
+1. Open a new terminal 
+2. Clone this repository: `git@github.com:Brody-Lab/bl_pipeline_python.git`
+    - If you cannot clone repositories with ssh, [set keys](https://docs.github.com/en/authentication/connecting-to-github-with-ssh/generating-a-new-ssh-key-and-adding-it-to-the-ssh-agent)
+3. Create a conda environment: `conda create -n bl_pipeline_python_env python==3.7`.
+4. Activate environment: `conda activate bl_pipeline_python_env`.   **(Activate environment each time you use the project)**
+5. Change directory to this repository `cd bl_pipeline_python`.
+6. Install all required libraries `pip install -e .`
+7. Datajoint Configuration: `jupyter notebook notebooks/00-datajoint-configuration.ipynb` 
 
 
 ## Developer Notes

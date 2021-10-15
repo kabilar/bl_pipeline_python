@@ -7,11 +7,11 @@
 #       extension: .py
 #       format_name: light
 #       format_version: '1.5'
-#       jupytext_version: 1.11.4
+#       jupytext_version: 1.11.1
 #   kernelspec:
-#     display_name: Python 3 (ipykernel)
+#     display_name: bl_dev
 #     language: python
-#     name: python3
+#     name: bl_dev
 # ---
 
 # # Run ephys element workflow
@@ -21,15 +21,15 @@
 
 # To load the local configuration, we will change the directory to the package root.
 
-from scripts.conf_file_finding import try_find_conf_file
-try_find_conf_file()
+import os
+os.chdir('../..')
 
 #
 # Let's start by importing the relevant modules.
 
 import datajoint as dj
 from bl_pipeline import lab, subject, acquisition
-from bl_pipeline.ephys_element import ephys_element, probe_element, get_session_cluster_directory
+from bl_pipeline.ephys_element import ephys_element, probe_element
 
 # # Pipeline structure
 
@@ -51,9 +51,8 @@ dj.Diagram(subject.Rats) + dj.Diagram(acquisition.Sessions) + dj.Diagram(probe_e
 # As an example, we will work on the following session throughout the notebook:
 
 # + For each combination of `acquisition.Sessions` and `ephys_element.ProbeInsertion`, there is a `ephys_element.EphysRecording`
-session_key = (acquisition.Sessions & 'session_rat="A230"' & 'session_date="2019-08-26"').fetch1('KEY')
-session_info  = (acquisition.Sessions & 'session_rat="A230"' & 'session_date="2019-08-26"').fetch1()
-#session_info
+session_key = (acquisition.Sessions & 'session_rat="A256"' & 'session_date="2020-09-28"').fetch1('KEY')
+acquisition.Sessions & session_key
 # -
 # ## Ingest Probe and ProbeInsertion by ephys_element_ingest
 
@@ -66,14 +65,9 @@ ephys_element_ingest.process_session(session_key)
 
 # As a result, there will contents in the following tables:
 
-probe_element.Probe() & session_key
-
-# +
+probe_element.Probe()
 
 ephys_element.ProbeInsertion()
-# -
-
-ephys_element.EphysRecording() & session_key
 
 # ## Populate EphysRecording
 
@@ -81,7 +75,6 @@ dj.Diagram(acquisition.Sessions) + (dj.Diagram(probe_element.ElectrodeConfig) + 
 ephys_element.EphysRecording + ephys_element.EphysRecording.EphysFile
 
 # first argument restricts the populate to a particular subset.
-print(session_key)
 ephys_element.EphysRecording.populate(session_key, display_progress=True)
 
 # Populate EphysRecording extracts the following information from .ap.meta file from SpikeGLX:
@@ -147,25 +140,19 @@ ephys_element.ClusteringParamSet.insert_new_params(
     'kilosort2', 0, 'Spike sorting using Kilosort2', params_ks)
 ephys_element.ClusteringParamSet()
 
-ephys_element.ClusteringTask()
-
-clust_dir = get_session_cluster_directory(session_key)
-clust_dir = clust_dir.replace(dj.config['custom']['clustering_root_data_dir'],'')
-clust_dir
-
 # We are then able to insert an entry into the `ClusteringTask` table. One important field of the table is `clustering_output_dir`, which specifies the Kilosort2 output directory for the later processing.  
 # **Note**: this output dir is a relative path to be combined with `clustering_root_directory` in the config file.
 
-clust_dir = get_session_cluster_directory(session_key)
-clust_dir = clust_dir.replace(dj.config['custom']['clustering_root_data_dir'],'')
 ephys_element.ClusteringTask.insert1(
-    dict(session_key, ratname=session_info['session_rat'], insertion_number=0, paramset_idx=0, clustering_output_dir=clust_dir), skip_duplicates=True)
+    dict(session_key, ratname='A256', insertion_number=0, paramset_idx=0,
+         clustering_output_dir='NP_sorted/Adrian/A256/A256_2020_09_28/A256_2020_09_28_g0/spikesort_2020_11_23_09_09_42_ks2jrc'),
+    skip_duplicates=True)
 
 ephys_element.ClusteringTask() & session_key
 
 # We are then able to populate the clustering results. The `Clustering` table now validates the Kilosort2 outcomes before ingesting the spike sorted results. In the future release of elements-ephys, this table will be used to trigger Kilosort2. A record in the `Clustering` indicates that Kilosort2 job is done successfully and the results are ready to be processed.
 
-ephys_element.Clustering.populate(session_key, display_progress=True)
+ephys_element.Clustering.populate(display_progress=True)
 
 ephys_element.Clustering() & session_key
 

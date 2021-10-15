@@ -1,8 +1,8 @@
 import datajoint as dj
 
 
-bdata   = dj.create_virtual_module('bdata', 'bl_bdata')
-ratinfo = dj.create_virtual_module('ratinfo', 'bl_ratinfo')
+bdata   = dj.create_virtual_module('bdata', 'bdatatest')
+ratinfo = dj.create_virtual_module('ratinfo', 'ratinfotest')
 
 # create new schema
 schema = dj.schema('bl_shadow_acquisition')
@@ -49,7 +49,7 @@ class SessStarted(dj.Computed):
 @schema
 class Sessions(dj.Computed):
      definition = """
-     ->bdata.Sessions2020
+     ->bdata.Sessions
      -----
      session_rat:                       VARCHAR(8)      # Rat name inherited from rats table
      session_userid:                    VARCHAR(32)     # Rat owner inherited from contacts table
@@ -80,9 +80,9 @@ class Sessions(dj.Computed):
      """
 
      def make(self,key):
-          fields = bdata.Sessions2020.heading.names
+          fields = bdata.Session.heading.names
           fields.remove('protocol_data')
-          data = (bdata.Sessions2020 & key).fetch(*fields, as_dict=True)[0]
+          data = (bdata.Sessions & key).fetch(*fields, as_dict=True)[0]
           email = (ratinfo.Contacts & f'experimenter="{data['experimenter']}"').fetch1('email')
 
           entry = dict(
@@ -115,3 +115,18 @@ class Sessions(dj.Computed):
                foodpuck                 = data['foodpuck']
           )
           self.insert1(entry)
+
+@schema
+class AcquisitionSessions(dj.Manual):
+     definition = """
+     ->Sessions
+     -----
+     session_rat:                       VARCHAR(8)      # ratname inherited from rats table
+     session_userid:                    VARCHAR(32)     # rat owner inherited from contacts table
+     session_rigid:                     INT(3)          # rig id number inherited from riginfo table
+     acquisition_type:                  VARCHAR(32)     # ephys or imaging
+     acquisition_raw_abs_path=null:     VARCHAR(200)    # absoulte path of raw files 
+     acquisition_raw_rel_path=null:     VARCHAR(200)    # relative path (from ephys or imaging root dir)
+     acquisition_post_abs_path=null:    VARCHAR(200)    # absoulte path of post processing file (clustered/segmented)
+     acquisition_post_rel_path=null:    VARCHAR(200)    # relative path (from ephys or imaging  clustering/segmentation root dir)
+     """
