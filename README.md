@@ -21,6 +21,13 @@ The python data pipeline defined for BrodyLab.
 6. Install all required libraries `pip install -e .`
 7. Datajoint Configuration: `jupyter notebook notebooks/00-datajoint-configuration.ipynb` 
 
+## Tutorials
+
+We have created some tutorial notebooks to help you start working with datajoint
+
+1. Querying data (**Strongly recommended**) 
+ - `jupyter notebook notebooks/tutorials/1-Explore U19 data pipeline with DataJoint.ipynb`
+
 
 ## Array Electrophysiology with Neuropixels Probes
 
