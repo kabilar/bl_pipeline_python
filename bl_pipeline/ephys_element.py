@@ -70,4 +70,4 @@ ephys_element.activate(ephys_schema_name,
 ephys_element.EphysRecording.key_source = \
     Session.proj(ratname='session_rat') * ephys_element.ProbeInsertion
 
-Session = Session.proj(...,ratname='session_rat')
+Session = Session.proj(..., ratname='session_rat')
