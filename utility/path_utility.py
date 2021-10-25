@@ -2,6 +2,7 @@
 import pathlib
 import os
 import glob
+import subprocess
 
 
 path_not_found_dict = {"no_ephys": "No ephys directory found",  
@@ -60,3 +61,49 @@ def find_file_pattern_dir(filepath, file_patterns):
     elif len(dirs_with_session_files) == 0:
         dirs_with_session_files = path_not_found_dict['no_file_pattern']
     return dirs_with_session_files
+
+def check_file_pattern_dir(filepath, file_patterns):
+    """
+    Check if directory (or its childs) contains some files with specific pattern names
+    """
+    dirs_with_session_files = []
+    child_dirs = [x[0] for x in os.walk(filepath)]
+    patterns_found = 0
+    for dir in child_dirs:
+        for pat in file_patterns:
+            found_file = glob.glob(dir+pat)
+            if len(found_file) > 0:
+                patterns_found = 1
+                break
+
+        if patterns_found:
+            break
+
+    if patterns_found:
+        return 1
+    else:
+        return 0
+
+def get_size_directory(path):
+    command = ["du", path, '-s']
+    s = subprocess.run(command, capture_output=True)
+    output = s.stdout.decode('UTF-8')
+    if len(output) != 0:
+        kbytes = int(output.split('\t')[0])
+    else:
+        kbytes = -1
+    return kbytes
+
+def get_size_directory2(FolderPath):
+ 
+    # assign size
+    size = 0
+    
+
+    # get size
+    for path, dirs, files in os.walk(FolderPath):
+        for f in files:
+            fp = os.path.join(path, f)
+            size += os.path.getsize(fp)
+    
+    return size
