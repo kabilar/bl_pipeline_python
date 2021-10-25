@@ -74,23 +74,60 @@ class AcquisitionSessions(dj.Manual):
      definition = """
      ->Sessions
      -----
-     status:                            TINYINT(1)      # current status in the ephys pipeline
      session_rat:                       VARCHAR(8)      # ratname inherited from rats table
      session_userid:                    VARCHAR(32)     # rat owner inherited from contacts table
      session_rigid:                     INT(3)          # rig id number inherited from riginfo table
      acquisition_type:                  VARCHAR(32)     # ephys or imaging
-     acquisition_post_abs_path=null:    VARCHAR(200)    # absoulte path of post processing file (clustered/segmented)
+     acquisition_raw_rel_path=null:    VARCHAR(200)     # absoulte path of raw files 
      acquisition_post_rel_path=null:    VARCHAR(200)    # relative path (from ephys or imaging  clustering/segmentation root dir)
      """
+
+@schema
+class StatusDefinition(dj.Lookup):
+     definition = """
+     status_pipeline:                    TINYINT(1)      # status in the ephys/imaging pipeline
+     ---
+     status_definition:                  VARCHAR(256)    # Status definition 
+     """
+     contents = [
+        [-1, 'Error in process'],
+        [0,  'New session'],
+        [1,  'Raw file transfer requested'],
+        [2,  'Raw file transferred to cluster'],
+        [3,  'Processing job in queue'],
+        [4,  'Processing job finished'],
+        [5,  'Processed file transfer requested'],
+        [6,  'Processed file transferred to PNI'],
+        [7,  'Processed with Canonical pipeline']
+     ]
+
+
+@schema
+class AcquisitionSessionsTestAutoPipeline(dj.Manual):
+     definition = """
+     ->Sessions
+     -----
+     ->StatusDefinition                                # current status in the ephys pipeline
+     session_rat:                       VARCHAR(8)      # ratname inherited from rats table
+     session_userid:                    VARCHAR(32)     # rat owner inherited from contacts table
+     session_rigid:                     INT(3)          # rig id number inherited from riginfo table
+     acquisition_type:                  VARCHAR(32)     # ephys or imaging
+     acquisition_raw_rel_path=null:     VARCHAR(200)    # relative path of raw files 
+     acquisition_post_rel_path=null:    VARCHAR(200)    # relative path for sorted files
+     task_copy_id_pre_path=null:        UUID            # id for globus transfer task raw file cup->tiger  
+     task_copy_id_pos_path=null:        UUID            # id for globus transfer task sorted file tiger->cup 
+     slurm_id_sorting=null:             UUID            # id for slurm process in tiger
+     """    
 
 @schema
 class AcquisitionSessionsStatus(dj.Manual):
      definition = """
      ->AcquisitionSessions
      -----
-     previous_status:                   TINYINT(1)      # old status in the ephys pipeline
-     current_status:                    TINYINT(1)      # current status in the ephys pipeline
+     -> StatusDefinition.proj(status_pipeline_old='status_pipeline') # old status in the ephys pipeline
+     -> StatusDefinition.proj(status_pipeline_new='status_pipeline') # current status in the ephys pipeline
      status_timestamp:                  DATETIME        # timestamp when status change ocurred
      error_message=null:                VARCHAR(4096)   # Error message if status now is failed
      error_exception=null:              BLOB            # Error exception if status is failed
      """
+

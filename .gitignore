@@ -128,3 +128,5 @@ docker_setup.sh
 # svg file
 *.svg
 Pipeline_Test.ipynb
+
+*.code-workspace
