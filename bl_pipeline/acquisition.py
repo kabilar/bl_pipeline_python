@@ -82,6 +82,44 @@ class AcquisitionSessions(dj.Manual):
      acquisition_post_rel_path=null:    VARCHAR(200)    # relative path (from ephys or imaging  clustering/segmentation root dir)
      """
 
+#Status pipeline dictionary
+status_pipeline_dict = {
+    'ERROR':             {'Value': -1,
+                         'Label': 'Error in process',
+                         'Task_Field': None},
+    'NEW_SESSION':       {'Value': 0,
+                         'Label': 'New session',
+                         'Task_Field': None},
+    'RAW_FILE_REQUEST':  {'Value': 1,
+                          'Label': 'Raw file transfer requested',
+                          'Task_Field': 'task_copy_id_pre_path'},
+    'RAW_FILE_CLUSTER':  {'Value': 2,
+                         'Label': 'Raw file transferred to cluster',
+                         'Task_Field': None},
+    'JOB_QUEUE':         {'Value': 3,
+                         'Label': 'Processing job in queue',
+                         'Task_Field': 'slurm_id_sorting'},
+    'JOB_FINISHED':      {'Value': 4,
+                         'Label': 'Processing job finished',
+                         'Task_Field': None},
+    'PROC_FILE_REQUEST': {'Value': 5,
+                         'Label': 'Processed file transfer requested',
+                         'Task_Field': 'task_copy_id_pos_path'},
+    'PROC_FILE_HOME':    {'Value': 6,
+                         'Label': 'Processed file transferred to PNI',
+                         'Task_Field': None},
+    'CANONICAL_PIPELINE': {'Value': 7,
+                         'Label': 'Processed with Canonical pipeline',
+                         'Task_Field': None},
+}
+
+def get_content_list_from_status_dict():
+    contents = list()
+    for i in status_pipeline_dict.keys():    
+        contents.append([status_pipeline_dict[i]['Value'], status_pipeline_dict[i]['Label']])
+    return contents
+
+
 @schema
 class StatusDefinition(dj.Lookup):
      definition = """
@@ -89,17 +127,7 @@ class StatusDefinition(dj.Lookup):
      ---
      status_definition:                  VARCHAR(256)    # Status definition 
      """
-     contents = [
-        [-1, 'Error in process'],
-        [0,  'New session'],
-        [1,  'Raw file transfer requested'],
-        [2,  'Raw file transferred to cluster'],
-        [3,  'Processing job in queue'],
-        [4,  'Processing job finished'],
-        [5,  'Processed file transfer requested'],
-        [6,  'Processed file transferred to PNI'],
-        [7,  'Processed with Canonical pipeline']
-     ]
+     contents = get_content_list_from_status_dict()
 
 
 @schema
@@ -116,7 +144,7 @@ class AcquisitionSessionsTestAutoPipeline(dj.Manual):
      acquisition_post_rel_path=null:    VARCHAR(200)    # relative path for sorted files
      task_copy_id_pre_path=null:        UUID            # id for globus transfer task raw file cup->tiger  
      task_copy_id_pos_path=null:        UUID            # id for globus transfer task sorted file tiger->cup 
-     slurm_id_sorting=null:             UUID            # id for slurm process in tiger
+     slurm_id_sorting=null:             VARCHAR(16)     # id for slurm process in tiger
      """    
 
 @schema
