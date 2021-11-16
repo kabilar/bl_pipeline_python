@@ -11,8 +11,8 @@ class SessStarted(dj.Manual):
      definition = """
      sessid:                            INT(11)        # Unique number assigned to each training session
      -----
-     session_started_rat:               VARCHAR(8)     # rats name inherited from rats table
-     session_started_rigid:             INT(3)         # rig id number inherited from riginfo table
+     ->subject.Rats.proj(session_started_rat='ratname')# rats name inherited from rats table
+     ->lab.Riginfo.proj(session_started_rigid='rigid') # rig id number inherited from riginfo table
      session_date='1000-01-01':         DATE           # date the session started on in yyyy-mm-dd format
      session_starttime='00:00:00':      TIME           # time session started at
      was_ended=0:                       TINYINT(1)     # 0 if the session has not ended yet, 1 if it has
@@ -25,9 +25,9 @@ class Sessions(dj.Manual):
      definition = """
      ->SessStarted
      -----
-     session_rat:                       VARCHAR(8)      # ratname inherited from rats table
-     session_userid:                    VARCHAR(32)     # rat owner inherited from contacts table
-     session_rigid:                     INT(3)          # rig id number inherited from riginfo table
+     ->subject.Rats.proj(session_rat='ratname')         # rats name inherited from rats table
+     ->lab.Contacts                                     # rat owner inherited from contacts table
+     ->lab.Riginfo.proj(session_rigid='rigid')          # rig id number inherited from riginfo table
      session_date='1000-01-01':         DATE            # date session started on
      session_starttime='00:00:00':      TIME            # time session started
      session_endtime='00:00:00':        TIME            # time session ended
@@ -81,6 +81,27 @@ class AcquisitionSessions(dj.Manual):
      acquisition_raw_rel_path=null:    VARCHAR(200)     # absoulte path of raw files 
      acquisition_post_rel_path=null:    VARCHAR(200)    # relative path (from ephys or imaging  clustering/segmentation root dir)
      """
+
+@schema
+class Acquisitions(dj.Manual):
+     definition = """
+     acquisition_id:                   INT(11) AUTO_INCREMENT    # Unique number assigned to each acquisition on lab (ephys, imaging, video)          
+     -----
+     -> [nullable] SessStarted.proj(acquisition_sessid='sessid') # sessid inherited from SessStarted
+     -> subject.Rats.proj(acquisition_rat='ratname')             # rat inherited from rats table
+     -> lab.Contacts                                             # rat owner inherited from contacts table
+     acquisition_type:                  VARCHAR(32)              # ephys or imaging
+     acquisition_raw_rel_path=null:    VARCHAR(200)              # absoulte path of raw files 
+     """    
+
+@schema
+class Sortings(dj.Manual):
+     definition = """
+     sorting_id:                       INT(11) AUTO_INCREMENT    # Unique number assigned to each sorting done in the lab (ephys, imaging, video)          
+     -----
+     ->Acquisitions                                              # acquisition id (id to raw path of acquisition)
+     acquisition_post_rel_path=null:    VARCHAR(200)             # relative path (from ephys or imaging  clustering/segmentation root dir)
+     """        
 
 #Status pipeline dictionary
 status_pipeline_dict = {

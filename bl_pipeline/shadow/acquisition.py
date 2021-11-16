@@ -83,7 +83,7 @@ class Sessions(dj.Computed):
           fields = bdata.Session.heading.names
           fields.remove('protocol_data')
           data = (bdata.Sessions & key).fetch(*fields, as_dict=True)[0]
-          email = (ratinfo.Contacts & f'experimenter="{data['experimenter']}"').fetch1('email')
+          email = (ratinfo.Contacts & 'experimenter="'+ data['experimenter'] + '"').fetch1('email')
 
           entry = dict(
                sessid                   = data['sessid'],

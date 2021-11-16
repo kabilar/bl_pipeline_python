@@ -2,8 +2,8 @@ import datajoint as dj
 import datetime
 
 
-ratinfo = dj.create_virtual_module('ratinfo', 'bl_ratinfo')
-bdata   = dj.create_virtual_module('bdata', 'bl_bdata')
+bdata   = dj.create_virtual_module('bdata', 'bdatatest')
+ratinfo = dj.create_virtual_module('ratinfo', 'ratinfotest')
 
 # create shadow schema
 schema = dj.schema('bl_shadow_action')

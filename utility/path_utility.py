@@ -62,7 +62,32 @@ def find_file_pattern_dir(filepath, file_patterns):
         dirs_with_session_files = path_not_found_dict['no_file_pattern']
     return dirs_with_session_files
 
-def check_file_pattern_dir(filepath, file_patterns):
+def check_file_pattern_dir(filepath, file_patterns, search_childs=True):
+    """
+    Check if directory (or its childs) contains some files with specific pattern names
+    """
+    dirs_with_session_files = []
+    if search_childs:
+        child_dirs = [x[0] for x in os.walk(filepath)]
+    else:
+        child_dirs = [filepath]
+    patterns_found = 0
+    for dir in child_dirs:
+        for pat in file_patterns:
+            found_file = glob.glob(dir+pat)
+            if len(found_file) > 0:
+                patterns_found = 1
+                break
+
+        if patterns_found:
+            break
+
+    if patterns_found:
+        return 1
+    else:
+        return 0
+
+def check_file_pattern_dir_(filepath, file_patterns):
     """
     Check if directory (or its childs) contains some files with specific pattern names
     """

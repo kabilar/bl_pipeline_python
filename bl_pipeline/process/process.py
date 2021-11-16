@@ -60,7 +60,7 @@ MODULES = [
                 'Technotes',
                 'Water'
             ]
-        )
+        ),
     dict(
             module=(acquisition, acquisition_shadow),
             tables=[
