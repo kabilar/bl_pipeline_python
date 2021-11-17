@@ -37,12 +37,13 @@ dict_tables_primary_id = {
     'Mass': ['weighing_datetime', 'mass_id'],
     'Water': ['administration_date', 'water_id'],
     'Schedule': ['schedule_date', 'schedule_id'],
-    'Sessions': ['session_date', 'sessid']
+    'Sessions': ['session_date', 'sessid'],
+    'RatHistory': ['logtime', 'rathistory_old_id']
 }
 
 # Transfer data from 5 days in the past
 date_ref = datetime.date.today()
-date_ref = date_ref - datetime.timedelta(50)
+date_ref = date_ref - datetime.timedelta(5)
 date_ref = date_ref.strftime("%Y-%m-%d")
 
 # Copy data from shadow table (src_schema) to new table (target_schema)
@@ -50,16 +51,12 @@ def copy_table(target_schema, src_schema, table_name, **kwargs):
     target_table = getattr(target_schema, table_name)
     src_table = getattr(src_schema, table_name)
 
-    print(table_name)
     if table_name in list(dict_dates_big_tables.keys()):
-        print('****************************************************************************')
         query =  dict_dates_big_tables[table_name] + ">='" + date_ref + "'"
         src_table = src_table & query
         target_table = target_table & query
     
     q_insert = src_table - target_table.proj()
-
-    print(q_insert)
 
     
     try:
@@ -91,7 +88,7 @@ MODULES = [
             tables=[
                 'Rats',
                 # 'Rats.Contact',
-                'RatHistory',
+                #'RatHistory',
                 # 'RatHistory.Contact'
             ]
         ),
@@ -127,10 +124,11 @@ def ingest_shadow():
             print(f'Populating shadow table {table_name}')
             if table_name in list(dict_tables_primary_id.keys()):
                 query_date =  [dict_tables_primary_id[table_name][0] + ">='" + date_ref + "'"]
-                print(query_date)
-                id_date = (table_shadow & query_date).fetch(dict_tables_primary_id[table_name][1], limit=1)[0]
-                query =  [dict_tables_primary_id[table_name][1] + ">=" + str(id_date)]
-                table_shadow.populate(query, **kwargs)
+                id_date = (table_shadow & query_date).fetch(dict_tables_primary_id[table_name][1], limit=1)
+                if len(id_date) > 0:
+                    id_date = id_date[0]
+                    query =  [dict_tables_primary_id[table_name][1] + ">=" + str(id_date)]
+                    table_shadow.populate(query, **kwargs)
             else:
                 table_shadow.populate(**kwargs)
 
