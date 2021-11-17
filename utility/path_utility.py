@@ -109,6 +109,13 @@ def check_file_pattern_dir_(filepath, file_patterns):
     else:
         return 0
 
+
+def get_parent_dir(str_path):
+
+    path = pathlib.Path(str_path)
+    return path.parents[0].as_posix()
+
+
 def get_size_directory(path):
     command = ["du", path, '-s']
     s = subprocess.run(command, capture_output=True)
