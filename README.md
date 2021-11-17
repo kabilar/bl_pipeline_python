@@ -26,6 +26,7 @@ The python data pipeline defined for BrodyLab.
 We have created some tutorial notebooks to help you start working with datajoint
 
 1. Querying data (**Strongly recommended**) 
+ - `jupyter notebook notebooks/tutorials/Explore_Sessions_Data.ipynb`
  - `jupyter notebook notebooks/tutorials/1-Explore U19 data pipeline with DataJoint.ipynb`
 
 
