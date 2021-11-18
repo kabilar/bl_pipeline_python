@@ -57,11 +57,26 @@ virtualenv or conda.
   directories with the raw and processed data.
     + The directory paths will be specific to your machine.
     + Raw Neuropixels data
-      + Archive drive
-      + On linux, `/mnt/archive/brody/RATTER/PhysData/Raw/`
+      + Located on archive drive
+      + To mount cup on linux
+        ```
+        sudo mount -t cifs //apps02.pni.princeton.edu/archive-labdata /home/pu.win.princeton.edu/<Princeton netID>/mnt_archive -o username=<Princeton netID>,domain=PRINCETON,iocharset=utf8,rw,file_mode=0664,dir_mode=0775,nolinux,noperm,vers=2.1
+        ```
+      + Mount point on linux
+        ```
+        /home/pu.win.princeton.edu/<Princeton netID>/mnt_archive/brody/RATTER/PhysData/Raw/
+        ```
+
     + Processed Kilosort data
-      + Cup drive
-      + On linux, `/mnt/cup/labs/brody/RATTER/PhysData/`
+      + Located on cup drive
+      + To mount cup on linux
+        ```
+        sudo mount -t cifs //cup.pni.princeton.edu/brody /home/pu.win.princeton.edu/<Princeton netID>/mnt_cup -o username=<Princeton netID>,domain=PRINCETON,iocharset=utf8,rw,file_mode=0664,dir_mode=0775,nolinux,noperm,vers=2.1
+        ```
+      + Mount point on linux
+        ```
+        /home/pu.win.princeton.edu/<Princeton netID>/mnt_cup/labs/brody/RATTER/PhysData/NP_sorted/
+        ```
 
 + Start a python kernel in the root of the cloned repository directory and 
 DataJoint will be configured properly.
