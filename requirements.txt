@@ -2,7 +2,7 @@ scipy
 python-dotenv
 datajoint>0.13
 element-calcium-imaging
-element-array-ephys @ git+https://github.com/datajoint/element-array-ephys.git
+element-array-ephys @ git+https://github.com/kabilar/element-array-ephys.git
 element-data-loader @ git+https://github.com/datajoint/element-data-loader.git
 scanreader @ git+https://github.com/atlab/scanreader.git
 pandas
