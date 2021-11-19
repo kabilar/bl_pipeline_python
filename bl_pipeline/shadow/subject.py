@@ -2,7 +2,7 @@ import datajoint as dj
 from bl_pipeline.shadow import lab
 
 
-ratinfo = dj.create_virtual_module('ratinfo', 'bl_ratinfo')
+ratinfo = dj.create_virtual_module('ratinfo', 'ratinfotest')
 
 schema = dj.schema('bl_shadow_subject')
 
