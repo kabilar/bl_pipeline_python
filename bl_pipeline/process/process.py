@@ -8,7 +8,6 @@ from bl_pipeline.shadow import acquisition as acquisition_shadow
 
 from bl_pipeline import lab, subject, action, acquisition
 
-dj.config["enable_python_native_blobs"] = True
 
 # Copy data from shadow table (src_schema) to new table (target_schema)
 def copy_table(target_schema, src_schema, table_name, **kwargs):
@@ -60,7 +59,7 @@ MODULES = [
                 'Technotes',
                 'Water'
             ]
-        )
+        ),
     dict(
             module=(acquisition, acquisition_shadow),
             tables=[
