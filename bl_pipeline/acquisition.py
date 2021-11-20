@@ -11,8 +11,8 @@ class SessStarted(dj.Manual):
      definition = """
      sessid:                            INT(11)        # Unique number assigned to each training session
      -----
-     session_started_rat:               VARCHAR(8)     # rats name inherited from rats table
-     session_started_rigid:             INT(3)         # rig id number inherited from riginfo table
+     ->subject.Rats.proj(session_started_rat='ratname')# rats name inherited from rats table
+     ->lab.Riginfo.proj(session_started_rigid='rigid') # rig id number inherited from riginfo table
      session_date='1000-01-01':         DATE           # date the session started on in yyyy-mm-dd format
      session_starttime='00:00:00':      TIME           # time session started at
      was_ended=0:                       TINYINT(1)     # 0 if the session has not ended yet, 1 if it has
@@ -25,9 +25,9 @@ class Sessions(dj.Manual):
      definition = """
      ->SessStarted
      -----
-     session_rat:                       VARCHAR(8)      # ratname inherited from rats table
-     session_userid:                    VARCHAR(32)     # rat owner inherited from contacts table
-     session_rigid:                     INT(3)          # rig id number inherited from riginfo table
+     ->subject.Rats.proj(session_rat='ratname')         # rats name inherited from rats table
+     ->lab.Contacts                                     # rat owner inherited from contacts table
+     ->lab.Riginfo.proj(session_rigid='rigid')          # rig id number inherited from riginfo table
      session_date='1000-01-01':         DATE            # date session started on
      session_starttime='00:00:00':      TIME            # time session started
      session_endtime='00:00:00':        TIME            # time session ended
@@ -54,9 +54,10 @@ class Sessions(dj.Manual):
      """
 
 @schema
-class AcquisitionSessions(dj.Manual):
+class PreAcquisitionSessions(dj.Manual):
      definition = """
      ->Sessions
+     directory_num                      INT(3) 
      -----
      session_rat:                       VARCHAR(8)      # ratname inherited from rats table
      session_userid:                    VARCHAR(32)     # rat owner inherited from contacts table
@@ -67,3 +68,115 @@ class AcquisitionSessions(dj.Manual):
      acquisition_post_abs_path=null:    VARCHAR(200)    # absoulte path of post processing file (clustered/segmented)
      acquisition_post_rel_path=null:    VARCHAR(200)    # relative path (from ephys or imaging  clustering/segmentation root dir)
      """
+
+@schema
+class AcquisitionSessions(dj.Manual):
+     definition = """
+     ->Sessions
+     -----
+     session_rat:                       VARCHAR(8)      # ratname inherited from rats table
+     session_userid:                    VARCHAR(32)     # rat owner inherited from contacts table
+     session_rigid:                     INT(3)          # rig id number inherited from riginfo table
+     acquisition_type:                  VARCHAR(32)     # ephys or imaging
+     acquisition_raw_rel_path=null:    VARCHAR(200)     # absoulte path of raw files 
+     acquisition_post_rel_path=null:    VARCHAR(200)    # relative path (from ephys or imaging  clustering/segmentation root dir)
+     """
+
+@schema
+class Acquisitions(dj.Manual):
+     definition = """
+     acquisition_id:                   INT(11) AUTO_INCREMENT    # Unique number assigned to each acquisition on lab (ephys, imaging, video)          
+     -----
+     -> [nullable] SessStarted.proj(acquisition_sessid='sessid') # sessid inherited from SessStarted
+     -> subject.Rats.proj(acquisition_rat='ratname')             # rat inherited from rats table
+     -> lab.Contacts                                             # rat owner inherited from contacts table
+     acquisition_type:                  VARCHAR(32)              # ephys or imaging
+     acquisition_raw_rel_path=null:    VARCHAR(200)              # absoulte path of raw files 
+     """    
+
+@schema
+class Sortings(dj.Manual):
+     definition = """
+     sorting_id:                       INT(11) AUTO_INCREMENT    # Unique number assigned to each sorting done in the lab (ephys, imaging, video)          
+     -----
+     ->Acquisitions                                              # acquisition id (id to raw path of acquisition)
+     acquisition_post_rel_path=null:    VARCHAR(200)             # relative path (from ephys or imaging  clustering/segmentation root dir)
+     """        
+
+#Status pipeline dictionary
+status_pipeline_dict = {
+    'ERROR':             {'Value': -1,
+                         'Label': 'Error in process',
+                         'Task_Field': None},
+    'NEW_SESSION':       {'Value': 0,
+                         'Label': 'New session',
+                         'Task_Field': None},
+    'RAW_FILE_REQUEST':  {'Value': 1,
+                          'Label': 'Raw file transfer requested',
+                          'Task_Field': 'task_copy_id_pre_path'},
+    'RAW_FILE_CLUSTER':  {'Value': 2,
+                         'Label': 'Raw file transferred to cluster',
+                         'Task_Field': None},
+    'JOB_QUEUE':         {'Value': 3,
+                         'Label': 'Processing job in queue',
+                         'Task_Field': 'slurm_id_sorting'},
+    'JOB_FINISHED':      {'Value': 4,
+                         'Label': 'Processing job finished',
+                         'Task_Field': None},
+    'PROC_FILE_REQUEST': {'Value': 5,
+                         'Label': 'Processed file transfer requested',
+                         'Task_Field': 'task_copy_id_pos_path'},
+    'PROC_FILE_HOME':    {'Value': 6,
+                         'Label': 'Processed file transferred to PNI',
+                         'Task_Field': None},
+    'CANONICAL_PIPELINE': {'Value': 7,
+                         'Label': 'Processed with Canonical pipeline',
+                         'Task_Field': None},
+}
+
+def get_content_list_from_status_dict():
+    contents = list()
+    for i in status_pipeline_dict.keys():    
+        contents.append([status_pipeline_dict[i]['Value'], status_pipeline_dict[i]['Label']])
+    return contents
+
+
+@schema
+class StatusDefinition(dj.Lookup):
+     definition = """
+     status_pipeline:                    TINYINT(1)      # status in the ephys/imaging pipeline
+     ---
+     status_definition:                  VARCHAR(256)    # Status definition 
+     """
+     contents = get_content_list_from_status_dict()
+
+
+@schema
+class AcquisitionSessionsTestAutoPipeline(dj.Manual):
+     definition = """
+     ->Sessions
+     -----
+     ->StatusDefinition                                # current status in the ephys pipeline
+     session_rat:                       VARCHAR(8)      # ratname inherited from rats table
+     session_userid:                    VARCHAR(32)     # rat owner inherited from contacts table
+     session_rigid:                     INT(3)          # rig id number inherited from riginfo table
+     acquisition_type:                  VARCHAR(32)     # ephys or imaging
+     acquisition_raw_rel_path=null:     VARCHAR(200)    # relative path of raw files 
+     acquisition_post_rel_path=null:    VARCHAR(200)    # relative path for sorted files
+     task_copy_id_pre_path=null:        UUID            # id for globus transfer task raw file cup->tiger  
+     task_copy_id_pos_path=null:        UUID            # id for globus transfer task sorted file tiger->cup 
+     slurm_id_sorting=null:             VARCHAR(16)     # id for slurm process in tiger
+     """    
+
+@schema
+class AcquisitionSessionsStatus(dj.Manual):
+     definition = """
+     ->AcquisitionSessions
+     -----
+     -> StatusDefinition.proj(status_pipeline_old='status_pipeline') # old status in the ephys pipeline
+     -> StatusDefinition.proj(status_pipeline_new='status_pipeline') # current status in the ephys pipeline
+     status_timestamp:                  DATETIME        # timestamp when status change ocurred
+     error_message=null:                VARCHAR(4096)   # Error message if status now is failed
+     error_exception=null:              BLOB            # Error exception if status is failed
+     """
+

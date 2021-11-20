@@ -80,41 +80,45 @@ class Sessions(dj.Computed):
      """
 
      def make(self,key):
-          fields = bdata.Session.heading.names
+          fields = bdata.Sessions.heading.names
           fields.remove('protocol_data')
           data = (bdata.Sessions & key).fetch(*fields, as_dict=True)[0]
-          email = (ratinfo.Contacts & f'experimenter="{data['experimenter']}"').fetch1('email')
 
-          entry = dict(
-               sessid                   = data['sessid'],
-               session_rat              = data['ratname'],
-               session_userid           = email.split('@')[0],
-               session_rigid            = int(data['hostname'].strip('Rig')),
-               session_date             = data['sessiondate'],
-               session_starttime        = data['starttime'],
-               session_endtime          = data['endtime'],
-               protocol                 = data['protocol'],
-               # peh                    = data['peh'], # Unclear where this data is stored
-               n_done_trials            = data['n_done_trials'],
-               session_comments         = data['comments'],
-               settings_file            = data['settings_file'],
-               settings_path            = data['settings_path'],
-               data_file                = data['data_file'],
-               data_path                = data['data_path'],
-               video_file               = data['video_file'],
-               video_path               = data['video_path'],
-               total_correct            = data['total_correct'],
-               right_correct            = data['right_correct'],
-               left_correct             = data['left_correct'],
-               percent_violations       = data['percent_violations'],
-               # protocol_data          = data['protocol_data'], # Error when fetching this field
-               left_pokes               = data['left_pokes'],
-               center_pokes             = data['center_pokes'],
-               right_pokes              = data['right_pokes'],
-               ip_addr                  = data['IP_addr'],
-               foodpuck                 = data['foodpuck']
-          )
-          self.insert1(entry)
+          try:
+               email = (ratinfo.Contacts & 'experimenter="'+ data['experimenter'] + '"').fetch1('email')
+
+               entry = dict(
+                    sessid                   = data['sessid'],
+                    session_rat              = data['ratname'],
+                    session_userid           = email.split('@')[0],
+                    session_rigid            = int(data['hostname'].strip('Rig')),
+                    session_date             = data['sessiondate'],
+                    session_starttime        = data['starttime'],
+                    session_endtime          = data['endtime'],
+                    protocol                 = data['protocol'],
+                    # peh                    = data['peh'], # Unclear where this data is stored
+                    n_done_trials            = data['n_done_trials'],
+                    session_comments         = data['comments'],
+                    settings_file            = data['settings_file'],
+                    settings_path            = data['settings_path'],
+                    data_file                = data['data_file'],
+                    data_path                = data['data_path'],
+                    video_file               = data['video_file'],
+                    video_path               = data['video_path'],
+                    total_correct            = data['total_correct'],
+                    right_correct            = data['right_correct'],
+                    left_correct             = data['left_correct'],
+                    percent_violations       = data['percent_violations'],
+                    # protocol_data          = data['protocol_data'], # Error when fetching this field
+                    left_pokes               = data['left_pokes'],
+                    center_pokes             = data['center_pokes'],
+                    right_pokes              = data['right_pokes'],
+                    ip_addr                  = data['IP_addr'],
+                    foodpuck                 = data['foodpuck']
+               )
+               self.insert1(entry)
+          except:
+               print('No valid contact: ', data['experimenter'])
 
 @schema
 class AcquisitionSessions(dj.Manual):

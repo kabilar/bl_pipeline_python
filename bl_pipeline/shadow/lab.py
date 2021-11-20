@@ -1,7 +1,7 @@
 import datajoint as dj
 
 
-ratinfo = dj.create_virtual_module('ratinfo', 'bl_ratinfo')
+ratinfo = dj.create_virtual_module('ratinfo', 'ratinfotest')
 
 # create shadow schemas
 schema = dj.schema('bl_shadow_lab')

@@ -128,3 +128,9 @@ docker_setup.sh
 # svg file
 *.svg
 Pipeline_Test.ipynb
+
+*.code-workspace
+
+slurm_files/*
+u19datajoint-b121ee91f642.json
+*brodylab_db_conf.json

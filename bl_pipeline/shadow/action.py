@@ -2,8 +2,8 @@ import datajoint as dj
 import datetime
 
 
-ratinfo = dj.create_virtual_module('ratinfo', 'bl_ratinfo')
-bdata   = dj.create_virtual_module('bdata', 'bl_bdata')
+bdata   = dj.create_virtual_module('bdata', 'bdatatest')
+ratinfo = dj.create_virtual_module('ratinfo', 'ratinfotest')
 
 # create shadow schema
 schema = dj.schema('bl_shadow_action')
@@ -25,21 +25,27 @@ class CalibrationInfoTbl(dj.Computed):
      """
      
      def make(self,key):
+          print(key)
           key_shadow = dict(calibrationid=key['calibration_info_tbl_id'])
           data = (bdata.CalibrationInfoTbl & key_shadow).fetch1()
-          entry = dict(
-               calibration_info_tbl_id  = data['calibrationid'],
-               rigid                    = data['rig_id'],
-               calibration_datetime     = data['dateval'],
-               open_valve_time          = data['timeval'],
-               calibration_person       = data['initials'],
-               valve                    = data['valve'],
-               dispense                 = data['dispense'],
-               isvalid                  = data['isvalid'],
-               target                   = data['target']
-          )
+          
+          try:
+               int(data['rig_id'])
 
-          self.insert1(entry)           
+               entry = dict(
+                    calibration_info_tbl_id  = data['calibrationid'],
+                    rigid                    = data['rig_id'],
+                    calibration_datetime     = data['dateval'],
+                    open_valve_time          = data['timeval'],
+                    calibration_person       = data['initials'],
+                    valve                    = data['valve'],
+                    dispense                 = data['dispense'],
+                    isvalid                  = data['isvalid'],
+                    target                   = data['target']
+               )
+               self.insert1(entry)       
+          except Exception as e: 
+               print(e)   
 
 @schema
 class Mass(dj.Computed):
@@ -57,18 +63,21 @@ class Mass(dj.Computed):
           data = (ratinfo.Mass & key_shadow).fetch1()
 
           if data['date'] != '0000-00-00':
-               data_email = (ratinfo.Contacts & {'initials': data['tech']}).fetch1('email')
-               weighing_datetime = datetime.datetime.combine(data['date'],(datetime.datetime.min + data['timeval']).time())
+               try:
+                    data_email = (ratinfo.Contacts & {'initials': data['tech']}).fetch1('email')
+                    weighing_datetime = datetime.datetime.combine(data['date'],(datetime.datetime.min + data['timeval']).time())
 
-               entry = dict(
-                    mass_id                  = data['weighing'],
-                    ratname                  = data['ratname'],
-                    weigh_person             = data_email.split('@')[0],
-                    weighing_datetime        = weighing_datetime,
-                    mass                     = data['mass']
-               )
+                    entry = dict(
+                         mass_id                  = data['weighing'],
+                         ratname                  = data['ratname'],
+                         weigh_person             = data_email.split('@')[0],
+                         weighing_datetime        = weighing_datetime,
+                         mass                     = data['mass']
+                    )
 
-               self.insert1(entry)          
+                    self.insert1(entry)
+               except Exception as e: 
+                    print(e)
 
 @schema
 class Rigwater(dj.Computed):
@@ -88,19 +97,23 @@ class Rigwater(dj.Computed):
           key_shadow = dict(id=key['rigwater_id'])
           data = (ratinfo.Rigwater & key_shadow).fetch1()
 
-          if data['dateval'] != '0000-00-00':
-               entry = dict(
-                    rigwater_id              = data['id'],
-                    ratname                  = data['ratname'],
-                    earnedwater_datetime     = data['dateval'],
-                    totalvol                 = data['totalvol'],
-                    trialvol                 = data['trialvol'],
-                    complete                 = data['complete'],
-                    n_rewarded_trials        = data['n_rewarded_trials'],
-                    target_percent           = data['target_percent']
-               )
+          try:
+               str_date = data['dateval'].strftime("%Y-%m-%d")
+               if data['dateval'] != '0000-00-00':
+                    entry = dict(
+                         rigwater_id              = data['id'],
+                         ratname                  = data['ratname'],
+                         earnedwater_datetime     = data['dateval'],
+                         totalvol                 = data['totalvol'],
+                         trialvol                 = data['trialvol'],
+                         complete                 = data['complete'],
+                         n_rewarded_trials        = data['n_rewarded_trials'],
+                         target_percent           = data['target_percent']
+                    )
 
-               self.insert1(entry)
+                    self.insert1(entry)
+          except Exception as e: 
+               print(e)
 
 @schema
 class Schedule(dj.Computed):
@@ -270,16 +283,25 @@ class Water(dj.Computed):
           key_shadow = dict(watering=key['water_id'])
           data = (ratinfo.Water & key_shadow).fetch1()
 
-          entry = dict(
-               water_id                 = data['watering'],
-               ratname                  = data['rat'],
-               administration_date      = data['date'],
-               administration_starttime = data['starttime'],
-               administration_stoptime  = data['stoptime'],
-               administration_person    = data['tech'],
-               volume                   = data['volume'],
-               percent_bodymass         = data['percent_bodymass'],
-               percent_target           = data['percent_target']
-          )
+          try:
+               str_date = data['date'].strftime("%Y-%m-%d")
+               #datetime.datetime.strptime(data['date'], "%Y-%m-%d")
+               
+               entry = dict(
+                    water_id                 = data['watering'],
+                    ratname                  = data['rat'],
+                    administration_date      = data['date'],
+                    administration_starttime = data['starttime'],
+                    administration_stoptime  = data['stoptime'],
+                    administration_person    = data['tech'],
+                    volume                   = data['volume'],
+                    percent_bodymass         = data['percent_bodymass'],
+                    percent_target           = data['percent_target']
+               )
 
-          self.insert1(entry)
+               self.insert1(entry)
+          
+          except Exception as e: 
+               print(e)
+
+ 
