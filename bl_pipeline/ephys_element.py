@@ -57,7 +57,7 @@ def get_ephys_root_data_dir():
     return root_data_dirs
 
 def get_session_directory(session_key): 
-    session_dir = (Session & session_key).fetch1('acquisition_raw_rel_path')
+    session_dir = (acquisition.Acquisitions & session_key).fetch1('acquisition_raw_rel_path')
 
     return session_dir
 
