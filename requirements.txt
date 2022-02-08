@@ -2,11 +2,14 @@ globus-cli
 scipy
 python-dotenv
 element-calcium-imaging
-element-array-ephys @ git+https://github.com/datajoint/element-array-ephys.git
-element-data-loader @ git+https://github.com/datajoint/element-data-loader.git
+#element-array-ephys @ git+https://github.com/datajoint/element-array-ephys.git
+#element-data-loader @ git+https://github.com/datajoint/element-data-loader.git
 scanreader @ git+https://github.com/atlab/scanreader.git
 pandas
 numpy
 astropy
 jupyterlab
 bitstring
+#datajoint==0.12.9
+datajoint @ git+https://github.com/Alvalunasan/datajoint-python@old_mym_read_blob_support
+
