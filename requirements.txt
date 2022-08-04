@@ -11,5 +11,5 @@ astropy
 jupyterlab
 bitstring
 #datajoint==0.12.9
-datajoint @ git+https://github.com/Alvalunasan/datajoint-python@old_mym_read_blob_support
+datajoint
 
