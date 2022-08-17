@@ -93,12 +93,13 @@ def _mymblob_to_dict2(np_array, as_int=True):
 
     return out_dict
 
-'''
+
 def mymblob_to_dict(np_array, as_int=True):
-    
-    %Transform a numpy array to dictionary:
-    %(numpy array are stored when saving Blobs in  MATLAB Datajoint, normally a dictionary will be the fit)
-    %
+    '''
+    DEPRECTATED ------------------------------
+     Transform a numpy array to dictionary:
+    (numpy array are stored when saving Blobs in  MATLAB Datajoint, normally a dictionary will be the fit)
+    '''
 
     # Transform numpy array to DF
     out_dict = pd.DataFrame(np_array.flatten())
@@ -131,5 +132,4 @@ def mymblob_to_dict(np_array, as_int=True):
     out_dict = out_dict.to_dict()
 
     return out_dict
-'''
 
