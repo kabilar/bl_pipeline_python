@@ -70,6 +70,15 @@ def copy_table(target_schema, src_schema, table_name, **kwargs):
                 traceback.print_exc()
     
 
+def copy_sessions_with_blob():
+
+    bdatatest = dj.create_virtual_module('bdatatatest', 'bdatatest')
+
+    sessions_t = bdatatest.Sessions * bdatatest.ParsedEvents & 'session_date > "2022-08-01"'
+
+
+    q_insert = sessions_t - acquisition.Sessions2.proj()
+
 
 MODULES = [
     dict(
