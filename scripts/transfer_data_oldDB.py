@@ -11,6 +11,7 @@ import sys
 import numpy as np
 import json
 
+import mariadb
 #Convert time column in pandas to string (for DatajointInsertion)
 def convert_time_2_str(df_column):
     
@@ -88,7 +89,7 @@ db_params = db_params_file.read()
 db_params = json.loads(db_params)
 
 
-con=client.connect(host=db_params['host'],user=db_params['user'],password=db_params['password'], cursorclass=pymysql.cursors.DictCursor)
+con=client.connect(host=db_params['host'],user=db_params['user'],password=db_params['password'], ssl=True)
 with con.cursor() as cur:
     sql = """SELECT TABLE_SCHEMA, TABLE_NAME, UPDATE_TIME, 
     ROUND((DATA_LENGTH + INDEX_LENGTH) / 1024 / 1024) AS `Size_MB`
