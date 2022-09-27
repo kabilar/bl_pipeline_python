@@ -2,7 +2,7 @@
 from scripts.conf_file_finding import try_find_conf_file
 try_find_conf_file()
 
-import pymysql as client
+import mariadb as client
 import pymysql.cursors
 import pandas as pd
 import datajoint as dj
@@ -10,15 +10,21 @@ import datetime
 import sys
 import numpy as np
 import json
+import sys
 
-import mariadb
+if len(sys.argv) > 1:
+    num_days_before = int(sys.argv[1])
+else:
+    num_days_before = 3
+
+
 #Convert time column in pandas to string (for DatajointInsertion)
 def convert_time_2_str(df_column):
     
     df_column = df_column.astype(str)
     df_column = df_column.str.slice(start=-8)
 
-    df_column.loc[df_column == 'NaT'] = None
+    df_column[df_column == 'NaT']  = None
     return df_column
 
 #Convert date column in pandas to string (for DatajointInsertion)
@@ -41,13 +47,13 @@ def convert_datetimes_2_str(df_column):
 
 # Transfer data from 5 days in the past
 date_ref = datetime.date.today()
-date_ref = date_ref - datetime. timedelta(5)
+date_ref = date_ref - datetime. timedelta(num_days_before)
 date_ref = date_ref.strftime("%Y-%m-%d")
 
 # Special parameters, date columns and big tables with no date field
-nodate_tables = ['sess_list', 'parsed_events']
+nodate_tables = ['sess_list', 'parsed_events', 'sessions']
 
-noneed_copy = []
+noneed_copy = ['schedule', 'carlosexperiment', 'infusions']
 
 dict_dates_big_tables = {
     'technotes': 'datestr',
@@ -89,7 +95,7 @@ db_params = db_params_file.read()
 db_params = json.loads(db_params)
 
 
-con=client.connect(host=db_params['host'],user=db_params['user'],password=db_params['password'], ssl=True, cursorclass=pymysql.cursors.DictCursor)
+con=client.connect(host=db_params['host'],user=db_params['user'],password=db_params['password'], ssl=True)
 with con.cursor() as cur:
     sql = """SELECT TABLE_SCHEMA, TABLE_NAME, UPDATE_TIME, 
     ROUND((DATA_LENGTH + INDEX_LENGTH) / 1024 / 1024) AS `Size_MB`
@@ -116,7 +122,13 @@ tables_db_copy2 = tables_db_copy2.loc[~tables_db_copy2['TABLE_NAME'].isin(noneed
 tables_db_copy2 = tables_db_copy2.reset_index(drop=True)
 
 ## Fetch from brodylabvm and insert on datajoint01 (group 1 and 2)
+
 for i in range(tables_db_copy2.shape[0]):
+
+    this_table = tables_db_copy2.loc[i, 'TABLE_NAME']
+
+    if this_table == 'rigtrials':
+        continue
 
     sql = "SELECT * from " + tables_db_copy2.loc[i, 'TABLE_SCHEMA'] + "." + tables_db_copy2.loc[i, 'TABLE_NAME'] +  " "
     
@@ -164,7 +176,6 @@ for i in range(tables_db_copy2.shape[0]):
         #if tables_db_copy2.loc[i, 'TABLE_NAME'] == "xxx":
         #    break
         table_instance.insert(data_insert, skip_duplicates=True)
-                                                
 
 ## Fetch from brodylabvm and insert on datajoint01 (group 3)
 for i in range(tables_nodate_copy.shape[0]):
@@ -186,6 +197,12 @@ for i in range(tables_nodate_copy.shape[0]):
         with con.cursor() as cur:
             cur.execute(sql2)
             data_insert = pd.DataFrame(cur.fetchall())
-        
+     
+        #Convert time columns
+        if tables_nodate_copy.loc[i, 'TABLE_NAME'] in (list(time2_str_dict.keys())):
+            list_times = time2_str_dict[tables_nodate_copy.loc[i, 'TABLE_NAME']]
+            for j in list_times:
+                data_insert[j] = convert_time_2_str(data_insert[j])
+   
         table_instance.insert(data_insert, skip_duplicates=True)
     

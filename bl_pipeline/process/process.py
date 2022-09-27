@@ -9,6 +9,14 @@ from bl_pipeline.shadow import acquisition as acquisition_shadow
 
 from bl_pipeline import lab, subject, action, acquisition
 
+import sys
+
+if len(sys.argv) > 1:
+    num_days_before = int(sys.argv[1])
+else:
+    num_days_before = 3
+
+
 dj.config["enable_python_native_blobs"] = True
 
 dict_dates_big_tables = {
@@ -24,7 +32,7 @@ dict_dates_big_tables = {
     'Water': 'administration_date',
     'Schedule': 'schedule_date',
     'Sessions': 'session_date',
-    'Rats': 'deliverydate',
+    #'Rats': 'deliverydate',
     'RatHistory': 'logtime',   
 }
 
@@ -43,7 +51,7 @@ dict_tables_primary_id = {
 
 # Transfer data from 5 days in the past
 date_ref = datetime.date.today()
-date_ref = date_ref - datetime.timedelta(5)
+date_ref = date_ref - datetime.timedelta(num_days_before)
 date_ref = date_ref.strftime("%Y-%m-%d")
 
 # Copy data from shadow table (src_schema) to new table (target_schema)
@@ -57,7 +65,6 @@ def copy_table(target_schema, src_schema, table_name, **kwargs):
         target_table = target_table & query
     
     q_insert = src_table - target_table.proj()
-
     
     try:
         target_table.insert(q_insert, **kwargs)
@@ -104,7 +111,7 @@ MODULES = [
     dict(
             module=(action, action_shadow),
             tables=[
-                'CalibrationInfoTbl',
+               # 'CalibrationInfoTbl',
                 'Mass',
                 'Rigwater',
                 'Schedule',
@@ -134,6 +141,8 @@ def ingest_shadow():
             if table_name in list(dict_tables_primary_id.keys()):
                 query_date =  [dict_tables_primary_id[table_name][0] + ">='" + date_ref + "'"]
                 id_date = (table_shadow & query_date).fetch(dict_tables_primary_id[table_name][1], limit=1)
+                print(id_date)
+                print(query_date)
                 if len(id_date) > 0:
                     id_date = id_date[0]
                     query =  [dict_tables_primary_id[table_name][1] + ">=" + str(id_date)]
