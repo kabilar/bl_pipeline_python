@@ -89,7 +89,7 @@ db_params = db_params_file.read()
 db_params = json.loads(db_params)
 
 
-con=client.connect(host=db_params['host'],user=db_params['user'],password=db_params['password'], ssl=True)
+con=client.connect(host=db_params['host'],user=db_params['user'],password=db_params['password'], ssl=True, cursorclass=pymysql.cursors.DictCursor)
 with con.cursor() as cur:
     sql = """SELECT TABLE_SCHEMA, TABLE_NAME, UPDATE_TIME, 
     ROUND((DATA_LENGTH + INDEX_LENGTH) / 1024 / 1024) AS `Size_MB`
