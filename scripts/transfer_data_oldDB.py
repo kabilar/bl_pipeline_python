@@ -164,6 +164,7 @@ for i in range(tables_db_copy2.shape[0]):
     
     #Fetch data
     con = dj.conn(host=db_params['host'],user=db_params['user'],password=db_params['password'], reset=True)
+    dj.blob.bypass_serialization = True
     data_insert = pd.DataFrame(con.query(sql, as_dict=True))
     con.close()
     #with con.cursor() as cur:
@@ -210,6 +211,7 @@ for i in range(tables_db_copy2.shape[0]):
 
         print(data_insert)
 
+        dj.blob.bypass_serialization = True
         table_instance.insert(data_insert, skip_duplicates=True)
         conn1.close()
 
@@ -231,6 +233,7 @@ for i in range(tables_nodate_copy.shape[0]):
         sql2 = sql +' WHERE sessid >= ' + str(sess_array[j]) + " AND sessid < " + str(sess_array[j+1])
     
         con = dj.conn(host=db_params['host'],user=db_params['user'],password=db_params['password'], reset=True)
+        dj.blob.bypass_serialization = True
         data_insert = pd.DataFrame(con.query(sql2, as_dict=True))
         con.close()
 
@@ -244,6 +247,8 @@ for i in range(tables_nodate_copy.shape[0]):
                 for j in list_times:
                     data_insert[j] = convert_time_2_str(data_insert[j])
     
+            print(data_insert)
+            dj.blob.bypass_serialization = True
             table_instance.insert(data_insert, skip_duplicates=True)
             conn1.close()
     
