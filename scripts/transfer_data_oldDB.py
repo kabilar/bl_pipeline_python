@@ -2,8 +2,6 @@
 from scripts.conf_file_finding import try_find_conf_file
 try_find_conf_file()
 
-import mariadb as client
-import pymysql.cursors
 import pandas as pd
 import datajoint as dj
 import datetime
