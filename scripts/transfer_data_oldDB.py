@@ -143,11 +143,6 @@ tables_db_copy2 = tables_db_copy.loc[~tables_db_copy['TABLE_NAME'].isin(nodate_t
 tables_db_copy2 = tables_db_copy2.loc[~tables_db_copy2['TABLE_NAME'].isin(noneed_copy), :]
 tables_db_copy2 = tables_db_copy2.reset_index(drop=True)
 
-print(tables_nodate_copy)
-
-print(tables_db_copy2)
-
-
 ## Fetch from brodylabvm and insert on datajoint01 (group 1 and 2)
 for i in range(tables_db_copy2.shape[0]):
 
@@ -212,9 +207,6 @@ for i in range(tables_db_copy2.shape[0]):
         table_class = getattr(schema_class, dj.utils.to_camel_case(tables_db_copy2.loc[i, 'TABLE_NAME']))
         table_instance = table_class()
 
-        #if tables_db_copy2.loc[i, 'TABLE_NAME'] == "xxx":
-        #    break
-        print(data_insert)
         table_instance.insert(data_insert, skip_duplicates=True)
         conn1.close()
 
