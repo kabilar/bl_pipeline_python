@@ -15,6 +15,7 @@ if len(sys.argv) > 1:
 else:
     num_days_before = 3
 
+dj.blob.bypass_serialization = True
 
 #Convert time column in pandas to string (for DatajointInsertion)
 def convert_time_2_str(df_column):
@@ -66,7 +67,7 @@ date_ref = date_ref.strftime("%Y-%m-%d")
 # Special parameters, date columns and big tables with no date field
 nodate_tables = ['sess_list', 'parsed_events', 'sessions', 'channels']
 
-noneed_copy = ['schedule', 'carlosexperiment', 'infusions', 'events', 'raw_tracking', 'tracking', 'gcs_old', 'sched_rescue', 'gcs', 'video_log', 'spktimes']
+noneed_copy = ['schedule', 'carlosexperiment', 'infusions', 'events', 'raw_tracking', 'tracking', 'gcs_old', 'sched_rescue', 'gcs', 'video_log', 'spktimes', 'rigtrials']
 
 dict_dates_big_tables = {
     'technotes': 'datestr',
@@ -206,6 +207,8 @@ for i in range(tables_db_copy2.shape[0]):
         schema_class= getattr(sys.modules[__name__], tables_db_copy2.loc[i, 'TABLE_SCHEMA']+"test")
         table_class = getattr(schema_class, dj.utils.to_camel_case(tables_db_copy2.loc[i, 'TABLE_NAME']))
         table_instance = table_class()
+
+        print(data_insert)
 
         table_instance.insert(data_insert, skip_duplicates=True)
         conn1.close()
