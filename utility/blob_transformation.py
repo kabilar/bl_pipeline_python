@@ -14,7 +14,54 @@ def transform_blob(peh):
     for i in peh:
         a.append(_blob_to_dict(i))
 
+    if len(a) == 1:
+        a = a[0]
+
     return a
+
+def blob_dict_to_df(blob_dict):
+    '''
+    Expand dictionary from transform_blob function to create a trial by trial DataFrame
+    '''
+
+    #Check if all sizes of the dictionary arrays are the same size
+    sizes = list()
+    for i in blob_dict.keys():
+        sizes.append(len(blob_dict[i]))
+
+    if len(set(sizes)) == 1:
+        # If so, let's create a dictionary for each index of the arrays and append that to a list
+        f_size = sizes[0]
+        all_trials_list = list()
+        for i in range(f_size):
+            this_trial_dict = dict()
+            this_trial_dict = {key:value[i] for (key,value) in blob_dict.items()}
+            all_trials_list.append(this_trial_dict)
+
+        df_protocol_data2 = pd.DataFrame(all_trials_list)
+        return df_protocol_data2
+    else:
+        #If not the same sizes, we cannot convert return empty DF
+        return pd.DataFrame()
+
+def blob_peh_to_df(blob_peh, append_original_columnname=False):
+    '''
+    Expand peh dictionary columns so each event has it's own column
+    '''
+
+    df_peh = pd.DataFrame(blob_peh)
+    dh_peh2 = df_peh.copy()
+    #For each column of the dataframe
+    for i in df_peh.columns:
+        #Expand dictionary columns
+        this_column_df = dh_peh2[i].apply(pd.Series)
+        #Add original column name to each of the new columns created
+        if append_original_columnname:
+            this_column_df = this_column_df.add_prefix(i+'_')
+        # Replace original column
+        dh_peh2 = pd.concat([dh_peh2.drop([i], axis=1), this_column_df], axis=1)
+
+    return dh_peh2
 
 
 def _blob_to_dict(array_test, parent_fields=None):
@@ -88,7 +135,17 @@ def _mymblob_to_dict2(np_array, as_int=True):
             l=len(field) if field.shape else 0
             if l==1:
                 field = field[0]
-            out_dict[fields[idx]] = field
+            
+            this_field_names = field.dtype.names
+            if this_field_names is None:
+                out_dict[fields[idx]] = field
+            else:
+                a = list()
+                for i in field:
+                    a.append(_blob_to_dict(i))
+                if len(a) == 1:
+                    a = a[0]
+                out_dict[fields[idx]] = a
             
 
     return out_dict
