@@ -26,8 +26,10 @@ def blob_dict_to_df(blob_dict):
 
     #Check if all sizes of the dictionary arrays are the same size
     sizes = list()
+    sizes_dict = dict()
     for i in blob_dict.keys():
         sizes.append(len(blob_dict[i]))
+        sizes_dict[i] = len(blob_dict[i])
 
     if len(set(sizes)) == 1:
         # If so, let's create a dictionary for each index of the arrays and append that to a list
@@ -42,6 +44,9 @@ def blob_dict_to_df(blob_dict):
         return df_protocol_data2
     else:
         #If not the same sizes, we cannot convert return empty DF
+        print('Not all variables are the same length. Cannot create proper DataFrame')
+        result = '\n'.join(f'{key}: {value}' for key, value in sizes_dict.items())
+        print(result)
         return pd.DataFrame()
 
 def blob_peh_to_df(blob_peh, append_original_columnname=False):
@@ -69,6 +74,11 @@ def _blob_to_dict(array_test, parent_fields=None):
     "Private function"
     Recursive transformation of numpy array (saved with matlab datjoint) to dictionary.
     '''
+
+    # Set array as writable for further use
+    if isinstance(array_test, np.ndarray):
+        array_test = array_test.copy()
+        array_test.setflags(write=1)
 
     # Get fieldnames of structure (or "inherit" fieldnames from "parent")
     if parent_fields is None:
@@ -127,6 +137,10 @@ def _mymblob_to_dict2(np_array, as_int=True):
     # Associate each element of array with their fieldname
     out_dict = dict()
     for idx, field in enumerate(np_array):
+        # Set array as writable for further use
+        if isinstance(field, np.ndarray):
+            field = field.copy()
+            field.setflags(write=1)
         # If an element is dj.blob.MatStruct, it should be unpacked recursively again
         if isinstance(field, dj.blob.MatStruct):
             out_dict[fields[idx]] = _blob_to_dict(field)
@@ -136,9 +150,12 @@ def _mymblob_to_dict2(np_array, as_int=True):
             if l==1:
                 field = field[0]
             
+            # Check if variable is indeed a nested structure or dictionary
             this_field_names = field.dtype.names
+            # If not just append
             if this_field_names is None:
                 out_dict[fields[idx]] = field
+            # If it is call blob to dict again
             else:
                 a = list()
                 for i in field:
@@ -189,4 +206,3 @@ def mymblob_to_dict(np_array, as_int=True):
     out_dict = out_dict.to_dict()
 
     return out_dict
-
