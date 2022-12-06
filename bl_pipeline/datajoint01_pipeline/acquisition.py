@@ -54,6 +54,15 @@ class Sessions(dj.Manual):
      """
 
 @schema
+class DataFrameTest(dj.Manual):
+     definition = """
+     ->SessStarted
+     -----
+     dataframe_peh=null:                          MEDIUMBLOB      # parsed events history state, poke, and wave times on each trial
+     """
+
+
+@schema
 class Sessions2(dj.Manual):
      definition = """
      ->SessStarted

@@ -62,7 +62,7 @@ def blob_peh_to_df(blob_peh, append_original_columnname=False):
         this_column_df = dh_peh2[i].apply(pd.Series)
         #Add original column name to each of the new columns created
         if append_original_columnname:
-            this_column_df = this_column_df.add_prefix(i+'_')
+            this_column_df = this_column_df.add_prefix(i+'__')
         # Replace original column
         dh_peh2 = pd.concat([dh_peh2.drop([i], axis=1), this_column_df], axis=1)
 
