@@ -40,7 +40,7 @@ We have created some tutorial notebooks to help you start working with datajoint
 ## Developer Notes
 
 ### Database transfer
-+ `bl_pipeline_python/process/process.py`
++ `bl_pipeline_python/datajoint01_pipeline/process/process.py`
 + Copy data from source tables (to shadow tables) to new tables
 + Shadow table allows for renaming of primary key
 + Shadow table has same definition of the new table, except that the primary key

@@ -1,4 +1,4 @@
-from bl_pipeline.ephys_element import ephys_element
+from bl_pipeline.datajoint01_pipeline.ephys_element import ephys_element
 
 
 def populate(display_progress=True):

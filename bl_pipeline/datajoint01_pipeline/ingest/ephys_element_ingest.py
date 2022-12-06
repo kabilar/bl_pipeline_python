@@ -1,8 +1,8 @@
 import re
 import pathlib
 
-from bl_pipeline import acquisition, subject
-from bl_pipeline.ephys_element import (probe_element, ephys_element, get_session_directory)
+from bl_pipeline.datajoint01_pipeline import acquisition, subject
+from bl_pipeline.datajoint01_pipeline.ephys_element import (probe_element, ephys_element, get_session_directory)
 from element_array_ephys.readers import spikeglx
 
 """

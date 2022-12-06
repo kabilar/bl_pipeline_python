@@ -3,10 +3,10 @@ try_find_conf_file()
 
 import datajoint as dj
 
-from bl_pipeline import lab, subject, acquisition
-from bl_pipeline.ephys_element import ephys_element, probe_element
-from bl_pipeline.ingest import ephys_element_ingest
-from bl_pipeline.acquisition import AcquisitionSessions as Session
+from bl_pipeline.datajoint01_pipeline import lab, subject, acquisition
+from bl_pipeline.datajoint01_pipeline.ephys_element import ephys_element, probe_element
+from bl_pipeline.datajoint01_pipeline.ingest import ephys_element_ingest
+from bl_pipeline.datajoint01_pipeline.acquisition import AcquisitionSessions as Session
 
 params_ks = {
     "fs": 30000,

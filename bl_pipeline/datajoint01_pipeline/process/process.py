@@ -2,12 +2,12 @@ import traceback
 import datetime
 import datajoint as dj
 
-from bl_pipeline.shadow import lab as lab_shadow
-from bl_pipeline.shadow import subject as subject_shadow
-from bl_pipeline.shadow import action as action_shadow
-from bl_pipeline.shadow import acquisition as acquisition_shadow
+from bl_pipeline.datajoint01_pipeline.shadow import lab as lab_shadow
+from bl_pipeline.datajoint01_pipeline.shadow import subject as subject_shadow
+from bl_pipeline.datajoint01_pipeline.shadow import action as action_shadow
+from bl_pipeline.datajoint01_pipeline.shadow import acquisition as acquisition_shadow
 
-from bl_pipeline import lab, subject, action, acquisition
+from bl_pipeline.datajoint01_pipeline import lab, subject, action, acquisition
 
 import sys
 

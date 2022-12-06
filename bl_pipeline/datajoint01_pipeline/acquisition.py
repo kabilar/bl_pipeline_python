@@ -1,5 +1,5 @@
 import datajoint as dj
-from bl_pipeline import lab, subject
+from bl_pipeline.datajoint01_pipeline  import lab, subject
 
 
 # create new schema

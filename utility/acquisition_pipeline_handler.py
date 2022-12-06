@@ -4,7 +4,7 @@ import subprocess
 import json
 import pandas as pd
 import datajoint as dj
-import bl_pipeline.acquisition as acquisition
+import bl_pipeline.datajoint01_pipeline.acquisition as acquisition
 import utility.dj_shortcuts as dj_short
 import re
 

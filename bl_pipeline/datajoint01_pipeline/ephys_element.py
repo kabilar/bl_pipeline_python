@@ -34,9 +34,9 @@ probe_schema_name = dj.config['custom']['database.prefix'] + 'probe_element'
 ephys_schema_name = dj.config['custom']['database.prefix'] + 'ephys_element'
 
 # 2. Upstream tables
-from bl_pipeline import lab, subject, acquisition
-from bl_pipeline.acquisition import AcquisitionSessions as Session
-from bl_pipeline.subject import Rats as Subject
+from bl_pipeline.datajoint01_pipeline  import lab, subject, acquisition
+from bl_pipeline.datajoint01_pipeline.acquisition import AcquisitionSessions as Session
+from bl_pipeline.datajoint01_pipeline.subject import Rats as Subject
 
 schema = dj.schema(dj.config['custom']['database.prefix'] + 'lab')
 

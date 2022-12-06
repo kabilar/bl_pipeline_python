@@ -13,6 +13,6 @@ num_days=3
 
 conda activate bl_pipeline_python_env
 python scripts/transfer_data_oldDB.py $num_days
-python bl_pipeline/process/process.py $num_days
+python bl_pipeline/datajoint01_pipeline/process/process.py $num_days
 conda deactivate
 
