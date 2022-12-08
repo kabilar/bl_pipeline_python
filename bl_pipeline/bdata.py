@@ -57,7 +57,7 @@ class BehaviorEvent(dj.Imported):
 
      @property
      def key_source(self):
-          return super().key_source & (bdata.Sessions & 'sessid > 898700')
+          return super().key_source & (bdata.Sessions & 'sessid > 898650')
 
      def make(self,key):
 
