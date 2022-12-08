@@ -53,6 +53,9 @@ def blob_peh_to_df(blob_peh, append_original_columnname=False):
     '''
     Expand peh dictionary columns so each event has it's own column
     '''
+    # Case for single trial sessions
+    if isinstance(blob_peh, dict):
+        blob_peh = [blob_peh]
 
     df_peh = pd.DataFrame(blob_peh)
     dh_peh2 = df_peh.copy()
