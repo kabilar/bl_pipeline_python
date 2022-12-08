@@ -206,3 +206,61 @@ def mymblob_to_dict(np_array, as_int=True):
     out_dict = out_dict.to_dict()
 
     return out_dict
+
+
+def peh_trial_df_to_event_df(peh_trial_df, sessid):
+    '''
+    Transform a trial by trial peh DataFrame (1 row = 1 trial) to an time Event DataFrame (1 row = 1 event)
+    '''
+
+    df_event_columns =['sessid', 'trial', 'event_type', 'event_name', 'entry_num', 'in_time', 'out_time']
+    df_event = pd.DataFrame(columns=df_event_columns)
+
+    for column in peh_trial_df.columns:
+        if isinstance(peh_trial_df.loc[0, column], np.ndarray):
+            # Get event column
+            this_col_df = peh_trial_df[column].to_frame()
+            this_col_df['size'] = this_col_df[column].apply(lambda x: x.size)
+            # Only keep not empty events
+            this_col_df = this_col_df.loc[this_col_df['size'] > 0, :]
+            
+            if this_col_df.shape[0] > 0:
+                # Unnest events in separate rows
+                this_col_df = this_col_df.explode(column).explode(column)
+
+                # Get even rows as in time events
+                this_row_event_df = this_col_df.iloc[::2]
+                this_row_event_df = this_row_event_df.reset_index()
+                this_row_event_df = this_row_event_df.rename(columns={column: "in_time", "index": "trial"})
+                # Get odd rows as out time events
+                out_time_events = this_col_df.iloc[1::2]
+                out_time_events = out_time_events.reset_index(drop=True)
+                out_time_events = out_time_events.rename(columns={column: "out_time"})
+                # Get out time column to event dataframe
+                this_row_event_df['out_time'] = out_time_events['out_time']
+
+                # Get entry num per trial
+                this_row_event_df['entry_num'] = this_row_event_df.groupby('trial').cumcount(ascending=True)
+
+                # trial and entry num 1 based instead of 0 based
+                this_row_event_df['trial'] = this_row_event_df['trial'] + 1
+                this_row_event_df['entry_num'] = this_row_event_df['entry_num'] + 1
+
+                # Get event naming
+                this_row_event_df['event_type'] = column.split(sep='__')[0]
+                this_row_event_df['event_name'] = column.split(sep='__')[1]
+
+                # Reorder columns
+                this_row_event_df['sessid'] = sessid
+                this_row_event_df = this_row_event_df[df_event_columns]
+
+                # Concat in a single df for all events
+                df_event = pd.concat([df_event, this_row_event_df])
+
+    # Get id_event of the session
+    df_event = df_event.reset_index(drop=True)
+    df_event = df_event.reset_index()
+    df_event = df_event.rename({'index':'id_event'}, axis=1)
+    df_event['id_event'] = df_event['id_event'] + 1
+    
+    return df_event
