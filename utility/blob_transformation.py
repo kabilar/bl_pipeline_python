@@ -220,9 +220,14 @@ def peh_trial_df_to_event_df(peh_trial_df, sessid):
     df_event = pd.DataFrame(columns=df_event_columns)
 
     for column in peh_trial_df.columns:
-        if isinstance(peh_trial_df.loc[0, column], np.ndarray):
+
+        #Check if all trials are numpy array
+        this_col_df = peh_trial_df[column].to_frame()
+        this_col_df['is_numpy'] = this_col_df[column].apply(lambda x: isinstance(x, np.ndarray))
+        
+        if this_col_df['is_numpy'].all():
             # Get event column
-            this_col_df = peh_trial_df[column].to_frame()
+
             this_col_df['size'] = this_col_df[column].apply(lambda x: x.size)
             # Only keep not empty events
             this_col_df = this_col_df.loc[this_col_df['size'] > 0, :]
