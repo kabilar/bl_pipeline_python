@@ -8,8 +8,6 @@ scanreader @ git+https://github.com/atlab/scanreader.git
 pandas
 numpy
 astropy
-jupyterlab
 bitstring
-#datajoint==0.12.9
 datajoint
 
