@@ -13,13 +13,23 @@ The python data pipeline defined for BrodyLab.
 ## Installation with conda
 
 1. Open a new terminal 
-2. Clone this repository: `git@github.com:Brody-Lab/bl_pipeline_python.git`
-    - If you cannot clone repositories with ssh, [set keys](https://docs.github.com/en/authentication/connecting-to-github-with-ssh/generating-a-new-ssh-key-and-adding-it-to-the-ssh-agent)
-3. Create a conda environment: `conda create -n bl_pipeline_python_env python==3.7`.
+2. Clone this repository: either with https (`https://github.com/Brody-Lab/bl_pipeline_python.git`) or ssh (`git@github.com:Brody-Lab/bl_pipeline_python.git`)
+    - If you cannot clone repositories with ssh, [set keys overview](https://docs.github.com/en/authentication/connecting-to-github-with-ssh/generating-a-new-ssh-key-and-adding-it-to-the-ssh-agent), [set keys windows](https://github.com/Brody-Lab/jbreda_labnotebook/blob/master/helpful_code.md#ssh)
+3. Create a conda environment: `conda create -n bl_pipeline_python_env python==3.7`
+    - the name can be changed, just keep it consistent for your kernal below
 4. Activate environment: `conda activate bl_pipeline_python_env`.   **(Activate environment each time you use the project)**
 5. Change directory to this repository `cd bl_pipeline_python`.
-6. Install all required libraries `pip install -e .`
-7. Datajoint Configuration: `jupyter notebook notebooks/00-datajoint-configuration.ipynb` 
+6. Install the primary required libraries `pip install -e .`
+    - this will take a few minutes
+7. Install jupyter and ipykernal libraries in series
+    ```
+    conda install -c conda-forge jupyterlab
+    conda install -c anaconda ipykernel
+    python -m ipykernel install --user --name=bl_pipeline_python_env # allows you to run notebooks on environment kernal
+    ```
+8. Run the Configuration notebook under `notebooks/00-datajoint-configuration.ipynb`
+    - make sure you select the correct kernal from the top right menu
+9. If you have install issues, especially on a windows machine, see [here](https://github.com/Brody-Lab/bl_pipeline_python/blob/main/install_debug.md)
 
 ## Tutorials
 
