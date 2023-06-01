@@ -6,9 +6,10 @@ The python data pipeline defined for BrodyLab.
 
 ## Prerequisites
 
-1. Install conda on your system:  https://conda.io/projects/conda/en/latest/user-guide/install/index.html
-2. If running in Windows get [git](https://gitforwindows.org/)
-3. (Optional for ERDs) [Install graphviz](https://graphviz.org/download/)
+1. Request access to DataJoint: https://frevvo-prod.princeton.edu/frevvo/web/tn/pu.nplc/u/84fd5e8d-587a-4f6a-a802-0c3d2819e8fe/app/_sO14QHzSEemyQZ_M7RLPOg/formtype/_-XYdEEK2Eeqtf7JjRFmYDQ/popupform
+2. Install conda on your system:  https://conda.io/projects/conda/en/latest/user-guide/install/index.html
+3. If running in Windows get [git](https://gitforwindows.org/)
+4. (Optional for ERDs) [Install graphviz](https://graphviz.org/download/)
 
 ## Installation with conda
 
