@@ -28,8 +28,8 @@ try_find_conf_file()
 # Let's start by importing the relevant modules.
 
 import datajoint as dj
-from bl_pipeline import lab, subject, acquisition
-from bl_pipeline.ephys_element import ephys_element, probe_element, get_session_cluster_directory
+from bl_pipeline.datajoint01_pipeline import lab, subject, acquisition
+from bl_pipeline.datajoint01_pipeline.ephys_element import ephys_element, probe_element, get_session_cluster_directory
 
 # # Pipeline structure
 

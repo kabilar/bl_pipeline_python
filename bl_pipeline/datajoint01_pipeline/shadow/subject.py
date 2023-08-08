@@ -1,5 +1,5 @@
 import datajoint as dj
-from bl_pipeline.shadow import lab
+from bl_pipeline.datajoint01_pipeline.shadow import lab
 
 
 bdata   = dj.create_virtual_module('bdata', 'bdatatest')

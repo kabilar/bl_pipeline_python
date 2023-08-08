@@ -1,5 +1,5 @@
 import datajoint as dj
-from bl_pipeline import lab, subject
+from bl_pipeline.datajoint01_pipeline  import lab, subject
 
 
 # create new schema
@@ -26,7 +26,7 @@ class Sessions(dj.Manual):
      ->SessStarted
      -----
      ->subject.Rats.proj(session_rat='ratname')         # rats name inherited from rats table
-     ->lab.Contacts                                     # rat owner inherited from contacts table
+     ->lab.Contacts.proj(session_userid='user_id')      # rat owner inherited from contacts table
      ->lab.Riginfo.proj(session_rigid='rigid')          # rig id number inherited from riginfo table
      session_date='1000-01-01':         DATE            # date session started on
      session_starttime='00:00:00':      TIME            # time session started
@@ -46,6 +46,48 @@ class Sessions(dj.Manual):
      left_correct=null:                 FLOAT(2,2)      # percent left trials correct
      percent_violations=null:           FLOAT(2,2)      # percent violation trials
      protocol_data=null:                MEDIUMBLOB      # data structure containing selection of data from data and settings files
+     left_pokes=null:                   INT(10)         # number of left pokes performed
+     center_pokes=null:                 INT(10)         # number of center pokes performed
+     right_pokes=null:                  INT(10)         # number of right pokes performed
+     ip_addr=null:                      VARCHAR(15)     # IP address of rig session ran on
+     foodpuck=0:                        TINYINT(1)      # 1 if food was in the rig during the sessions, 0 if not
+     """
+
+@schema
+class DataFrameTest(dj.Manual):
+     definition = """
+     ->SessStarted
+     -----
+     dataframe_peh=null:                          MEDIUMBLOB      # parsed events history state, poke, and wave times on each trial
+     """
+
+
+@schema
+class Sessions2(dj.Manual):
+     definition = """
+     ->SessStarted
+     -----
+     ->subject.Rats.proj(session_rat='ratname')         # rats name inherited from rats table
+     ->lab.Contacts.proj(session_userid='user_id')      # rat owner inherited from contacts table
+     ->lab.Riginfo.proj(session_rigid='rigid')          # rig id number inherited from riginfo table
+     session_date='1000-01-01':         DATE            # date session started on
+     session_starttime='00:00:00':      TIME            # time session started
+     session_endtime='00:00:00':        TIME            # time session ended
+     protocol='':                       VARCHAR(30)     # protocol name
+     peh=null:                          blob@sessions_blobs     # parsed events history state, poke, and wave times on each trial
+     n_done_trials=0:                   INT(11)         # number of trials completed
+     session_comments=null:             VARCHAR(1000)   # general comments
+     settings_file='':                  VARCHAR(200)    # file containing settings saved at end of session
+     settings_path='':                  VARCHAR(200)    # path to settings file
+     data_file='':                      VARCHAR(200)    # file containing data saved at end of session
+     data_path='':                      VARCHAR(200)    # path to data file
+     video_file='':                     VARCHAR(200)    # file containing video saved at end of session
+     video_path='':                     VARCHAR(200)    # path to video file
+     total_correct=null:                FLOAT(2,2)      # percent trials correct
+     right_correct=null:                FLOAT(2,2)      # percent right trials correct
+     left_correct=null:                 FLOAT(2,2)      # percent left trials correct
+     percent_violations=null:           FLOAT(2,2)      # percent violation trials
+     protocol_data=null:                blob@sessions_blobs      # data structure containing selection of data from data and settings files
      left_pokes=null:                   INT(10)         # number of left pokes performed
      center_pokes=null:                 INT(10)         # number of center pokes performed
      right_pokes=null:                  INT(10)         # number of right pokes performed

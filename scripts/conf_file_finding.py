@@ -7,7 +7,6 @@ def chdir_to_root():
     root_dir_found = 0
     conf_file_found = 0
     while 1:
-        
         current_dir = os.getcwd()
         u19_dir = pathlib.Path(current_dir,'bl_pipeline')
         if os.path.isdir(u19_dir):

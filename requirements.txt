@@ -9,5 +9,6 @@ scanreader @ git+https://github.com/atlab/scanreader.git
 pandas
 numpy
 astropy
-jupyterlab
 bitstring
+datajoint
+
